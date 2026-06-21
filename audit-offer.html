@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audit Offer — Strataforge3</title>
+<meta name="description" content="A fixed-scope AI Production Risk Audit. Four risk surfaces, scored and ranked, delivered as one document in two weeks.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="markGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF8A3D"/>
+      <stop offset="100%" stop-color="#C2342A"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="ambient-nodes"></div>
+<svg class="ambient-hex" viewBox="0 0 620 620" fill="none">
+  <polygon points="520,40 580,75 580,145 520,180 460,145 460,75" fill="url(#markGrad)" opacity="0.85"/>
+  <polygon points="430,90 480,118 480,176 430,204 380,176 380,118" fill="url(#markGrad)" opacity="0.55"/>
+  <polygon points="540,170 600,205 600,275 540,310 480,275 480,205" fill="url(#markGrad)" opacity="0.7"/>
+  <polygon points="450,230 500,258 500,316 450,344 400,316 400,258" fill="url(#markGrad)" opacity="0.4"/>
+</svg>
+
+<nav>
+  <div class="wrap">
+    <div class="nav-mark">
+      <svg viewBox="0 0 100 100" fill="none">
+        <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#markGrad)"/>
+        <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#1E2068"/>
+      </svg>
+      <span class="wordmark">STRATAFORGE3</span>
+    </div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="audit-offer.html" class="active">Audit Offer</a>
+      <a href="process.html">Process</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="contact.html">Contact</a>
+      <a href="mailto:hello@strataforge3.com?subject=AI%20Production%20Risk%20Audit%20-%20Inquiry" class="mobile-cta-link">Book an audit →</a>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <button class="nav-cta" onclick="window.location.href='mailto:hello@strataforge3.com?subject=AI%20Production%20Risk%20Audit%20-%20Inquiry'">Book an audit</button>
+      <button class="nav-toggle" aria-label="Toggle menu">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="1" y1="4" x2="17" y2="4"/><line x1="1" y1="9" x2="17" y2="9"/><line x1="1" y1="14" x2="17" y2="14"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span>THE OFFER</div>
+      <h1>The AI Production<br>Risk Audit.</h1>
+      <p class="page-sub">One fixed-scope engagement. Four risk surfaces, scored independently and ranked by business impact. Delivered as a single document, not a slide deck.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">WHO IT'S FOR</span>
+        <h2>Built for teams that shipped fast and never went back to check.</h2>
+        <p>Series A–C tech companies, typically 20–300 people, who have AI features in production but no one formally responsible for verifying they're safe at scale. Usually triggered by a near-miss, a board question, a security questionnaire from an enterprise customer, or a new technical leader inheriting a system they didn't build.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">WHAT GETS CHECKED</span>
+        <h2>Four risk surfaces. Every system, every time.</h2>
+        <p>The same framework applied consistently, so findings are comparable and nothing gets missed because it wasn't the obvious place to look.</p>
+      </div>
+      <div class="surfaces">
+        <div class="surface">
+          <span class="num">01</span>
+          <div class="si"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 2 3 7v6c0 5 4 8.5 9 9 5-.5 9-4 9-9V7l-9-5z"/></svg></div>
+          <h3>Data exposure</h3>
+          <p>What the AI layer can read from and write to, whether access matches what it actually needs, whether permissions have drifted since launch, and whether there's any audit trail for what it accessed and when.</p>
+        </div>
+        <div class="surface">
+          <span class="num">02</span>
+          <div class="si"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 21V9l9-6 9 6v12M9 21V12h6v9"/></svg></div>
+          <h3>Architecture brittleness</h3>
+          <p>Single points of failure, vendor lock-in, undocumented dependencies, and bus factor — how many people understand each critical piece, and what breaks if one of them leaves.</p>
+        </div>
+        <div class="surface">
+          <span class="num">03</span>
+          <div class="si"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
+          <h3>Output reliability</h3>
+          <p>Where AI output reaches a customer or a high-stakes decision without review, what the blast radius is if it's wrong, and whether error rates are measured or just assumed to be fine.</p>
+        </div>
+        <div class="surface">
+          <span class="num">04</span>
+          <div class="si"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg></div>
+          <h3>Operational readiness</h3>
+          <p>Headroom at 5–10x current usage, clear ownership of the system today, recovery time if it fails, and whether there's a rollback path if a change makes things worse.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">SAMPLE OUTPUT</span>
+        <h2>What the report actually looks like.</h2>
+        <p>A synthetic example, run against a typical AI support-ticket assistant. Real engagements follow this exact structure — ranked findings, business impact first, technical detail second.</p>
+      </div>
+      <div class="panel demo-frame">
+        <div class="demo-titlebar">
+          <div class="tl-left"><span>sample-audit-support-assistant.report</span></div>
+          <span class="tl-tag">SYNTHETIC EXAMPLE</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-summary">
+            <div><div class="num c">2</div><div class="lbl">critical findings</div></div>
+            <div><div class="num h">2</div><div class="lbl">high findings</div></div>
+            <div><div class="num w">1</div><div class="lbl">watch findings</div></div>
+            <div><div class="num">14 days</div><div class="lbl">audit length</div></div>
+          </div>
+
+          <div class="finding">
+            <div class="finding-head">
+              <h4>Standing read access to the full customer table</h4>
+              <div class="finding-tags"><span class="finding-score">5 × 4 = 20</span><span class="bucket-pill bucket-critical">Critical</span></div>
+            </div>
+            <span class="surface-tag">DATA EXPOSURE</span>
+            <p>The support assistant has unrestricted read access to the customer database, not just the fields it needs to answer tickets. Access was never scoped down after the prototype stage, and no one currently owns reviewing it.</p>
+            <div class="fix"><b>Recommended fix:</b> Scope the service account to a read-only view of ticket-relevant fields; add quarterly access review.</div>
+          </div>
+
+          <div class="finding">
+            <div class="finding-head">
+              <h4>No rollback path for prompt changes</h4>
+              <div class="finding-tags"><span class="finding-score">4 × 4 = 16</span><span class="bucket-pill bucket-critical">Critical</span></div>
+            </div>
+            <span class="surface-tag">OPERATIONAL READINESS</span>
+            <p>A prompt update that degraded answer quality was live for nine days before anyone noticed — there was no versioning or fast revert path, and no monitoring flagged the drop in resolution rate.</p>
+            <div class="fix"><b>Recommended fix:</b> Version prompts in source control; add a same-day rollback path and a weekly resolution-rate check.</div>
+          </div>
+
+          <div class="finding">
+            <div class="finding-head">
+              <h4>Single undocumented retrieval script</h4>
+              <div class="finding-tags"><span class="finding-score">3 × 4 = 12</span><span class="bucket-pill bucket-high">High</span></div>
+            </div>
+            <span class="surface-tag">ARCHITECTURE BRITTLENESS</span>
+            <p>The entire retrieval pipeline depends on one script written by a former contractor. No one currently on the team has modified it or could explain several of its assumptions.</p>
+            <div class="fix"><b>Recommended fix:</b> Document the script's logic and dependencies; assign a current owner before any further changes.</div>
+          </div>
+
+          <div class="finding">
+            <div class="finding-head">
+              <h4>No measured error rate on generated responses</h4>
+              <div class="finding-tags"><span class="finding-score">4 × 3 = 12</span><span class="bucket-pill bucket-high">High</span></div>
+            </div>
+            <span class="surface-tag">OUTPUT RELIABILITY</span>
+            <p>Generated responses reach customers with no human review step and no logged accuracy rate. The team learned about a wrong pricing answer from a customer complaint, not from monitoring.</p>
+            <div class="fix"><b>Recommended fix:</b> Sample and score 5% of responses weekly; route low-confidence answers to human review.</div>
+          </div>
+
+          <div class="finding">
+            <div class="finding-head">
+              <h4>Cost scales unpredictably under load</h4>
+              <div class="finding-tags"><span class="finding-score">2 × 3 = 6</span><span class="bucket-pill bucket-watch">Watch</span></div>
+            </div>
+            <span class="surface-tag">OPERATIONAL READINESS</span>
+            <p>Per-ticket model cost is not currently tracked or capped, so a spike in ticket volume would translate directly into an unbudgeted cost spike with no early warning.</p>
+            <div class="fix"><b>Recommended fix:</b> Add per-day cost tracking and an alert threshold; revisit at next audit.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">WHAT HAPPENS NEXT</span>
+        <h2>Critical and High findings become your remediation roadmap.</h2>
+        <p>The audit report is the spec. You decide which findings to act on and in what order — Strataforge3 can scope and quote fixes individually, with no open-ended retainer required.</p>
+      </div>
+      <div class="hero-row" style="margin-top:8px;">
+        <button class="btn-primary" onclick="window.location.href='process.html'">See how it runs</button>
+        <button class="btn-secondary" onclick="window.location.href='pricing.html'">View pricing</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="wrap">
+      <h2>Know exactly where the risk is before someone else finds it.</h2>
+      <p>A 20-minute call to see if an audit makes sense for what you've built.</p>
+      <button class="btn-primary" style="padding:15px 32px; font-size:15.5px;" onclick="window.location.href='contact.html'">Book a 20-minute call</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="fm">
+          <svg viewBox="0 0 100 100" fill="none">
+            <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#markGrad)"/>
+            <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#14153E"/>
+          </svg>
+          <span class="wordmark">STRATA<em>FORGE3</em></span>
+        </div>
+        <p class="ftag">Engineered for production. Where data infrastructure gets forged.</p>
+      </div>
+      <div class="fcols">
+        <div class="fcol">
+          <h5>Site</h5>
+          <a href="index.html">Home</a>
+          <a href="audit-offer.html">Audit Offer</a>
+          <a href="process.html">Process</a>
+          <a href="pricing.html">Pricing</a>
+        </div>
+        <div class="fcol">
+          <h5>Get in touch</h5>
+          <a href="contact.html">Contact</a>
+          <a href="mailto:hello@strataforge3.com">hello@strataforge3.com</a>
+        </div>
+      </div>
+    </div>
+    <div class="fbottom">
+      <span>© 2026 Strataforge3. All rights reserved.</span>
+      <span>strataforge3.com</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

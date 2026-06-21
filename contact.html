@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Strataforge3</title>
+<meta name="description" content="Get in touch about an AI Production Risk Audit.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="markGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF8A3D"/>
+      <stop offset="100%" stop-color="#C2342A"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="ambient-nodes"></div>
+<svg class="ambient-hex" viewBox="0 0 620 620" fill="none">
+  <polygon points="520,40 580,75 580,145 520,180 460,145 460,75" fill="url(#markGrad)" opacity="0.85"/>
+  <polygon points="430,90 480,118 480,176 430,204 380,176 380,118" fill="url(#markGrad)" opacity="0.55"/>
+  <polygon points="540,170 600,205 600,275 540,310 480,275 480,205" fill="url(#markGrad)" opacity="0.7"/>
+  <polygon points="450,230 500,258 500,316 450,344 400,316 400,258" fill="url(#markGrad)" opacity="0.4"/>
+</svg>
+
+<nav>
+  <div class="wrap">
+    <div class="nav-mark">
+      <svg viewBox="0 0 100 100" fill="none">
+        <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#markGrad)"/>
+        <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#1E2068"/>
+      </svg>
+      <span class="wordmark">STRATAFORGE3</span>
+    </div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="audit-offer.html">Audit Offer</a>
+      <a href="process.html">Process</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="contact.html" class="active">Contact</a>
+      <a href="mailto:hello@strataforge3.com?subject=AI%20Production%20Risk%20Audit%20-%20Inquiry" class="mobile-cta-link">Book an audit →</a>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <button class="nav-cta" onclick="window.location.href='mailto:hello@strataforge3.com?subject=AI%20Production%20Risk%20Audit%20-%20Inquiry'">Book an audit</button>
+      <button class="nav-toggle" aria-label="Toggle menu">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="1" y1="4" x2="17" y2="4"/><line x1="1" y1="9" x2="17" y2="9"/><line x1="1" y1="14" x2="17" y2="14"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span>CONTACT</div>
+      <h1>Let's see if an audit<br>makes sense.</h1>
+      <p class="page-sub">A short note or a 20-minute call is enough to figure out whether this fits what you've built. No pitch deck required on either side.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section>
+    <div class="wrap">
+      <div class="contact-grid">
+        <div class="contact-direct">
+          <h3>Reach out directly</h3>
+          <p>The fastest way to start: send a short note on what you've built and what's prompting the question. Replies typically come within one business day.</p>
+          <a class="contact-email" href="mailto:hello@strataforge3.com?subject=AI%20Production%20Risk%20Audit%20-%20Inquiry">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg>
+            hello@strataforge3.com
+          </a>
+          <p style="margin-top:28px; font-size:13.5px; color:var(--text-tertiary);">Prefer to skip the form? This link opens your email client with the subject line already filled in.</p>
+        </div>
+
+        <form class="panel form-panel" onsubmit="return handleContactSubmit(event)">
+          <h3 style="margin-bottom:20px;">Or send a message here</h3>
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required placeholder="Your name">
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required placeholder="you@company.com">
+          </div>
+          <div class="form-group">
+            <label for="message">What are you looking into?</label>
+            <textarea id="message" name="message" required placeholder="A sentence or two on the AI system you'd want audited, and what's prompting the question."></textarea>
+          </div>
+          <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Send message</button>
+          <p class="form-note">This form opens a pre-filled email to hello@strataforge3.com — nothing is sent automatically or stored.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="fm">
+          <svg viewBox="0 0 100 100" fill="none">
+            <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#markGrad)"/>
+            <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#14153E"/>
+          </svg>
+          <span class="wordmark">STRATA<em>FORGE3</em></span>
+        </div>
+        <p class="ftag">Engineered for production. Where data infrastructure gets forged.</p>
+      </div>
+      <div class="fcols">
+        <div class="fcol">
+          <h5>Site</h5>
+          <a href="index.html">Home</a>
+          <a href="audit-offer.html">Audit Offer</a>
+          <a href="process.html">Process</a>
+          <a href="pricing.html">Pricing</a>
+        </div>
+        <div class="fcol">
+          <h5>Get in touch</h5>
+          <a href="contact.html">Contact</a>
+          <a href="mailto:hello@strataforge3.com">hello@strataforge3.com</a>
+        </div>
+      </div>
+    </div>
+    <div class="fbottom">
+      <span>© 2026 Strataforge3. All rights reserved.</span>
+      <span>strataforge3.com</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+<script>
+function handleContactSubmit(e){
+  e.preventDefault();
+  var name = document.getElementById('name').value;
+  var email = document.getElementById('email').value;
+  var message = document.getElementById('message').value;
+  var subject = encodeURIComponent('AI Production Risk Audit - Inquiry from ' + name);
+  var body = encodeURIComponent(message + '\n\n— ' + name + ' (' + email + ')');
+  window.location.href = 'mailto:hello@strataforge3.com?subject=' + subject + '&body=' + body;
+  return false;
+}
+</script>
+</body>
+</html>

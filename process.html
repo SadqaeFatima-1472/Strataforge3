@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Process — Strataforge3</title>
+<meta name="description" content="How the AI Production Risk Audit runs: intake, audit, report and debrief — two weeks, fixed scope.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="markGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF8A3D"/>
+      <stop offset="100%" stop-color="#C2342A"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="ambient-nodes"></div>
+<svg class="ambient-hex" viewBox="0 0 620 620" fill="none">
+  <polygon points="520,40 580,75 580,145 520,180 460,145 460,75" fill="url(#markGrad)" opacity="0.85"/>
+  <polygon points="430,90 480,118 480,176 430,204 380,176 380,118" fill="url(#markGrad)" opacity="0.55"/>
+  <polygon points="540,170 600,205 600,275 540,310 480,275 480,205" fill="url(#markGrad)" opacity="0.7"/>
+  <polygon points="450,230 500,258 500,316 450,344 400,316 400,258" fill="url(#markGrad)" opacity="0.4"/>
+</svg>
+
+<nav>
+  <div class="wrap">
+    <div class="nav-mark">
+      <svg viewBox="0 0 100 100" fill="none">
+        <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#markGrad)"/>
+        <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#1E2068"/>
+      </svg>
+      <span class="wordmark">STRATAFORGE3</span>
+    </div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="audit-offer.html">Audit Offer</a>
+      <a href="process.html" class="active">Process</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="contact.html">Contact</a>
+      <a href="mailto:hello@strataforge3.com?subject=AI%20Production%20Risk%20Audit%20-%20Inquiry" class="mobile-cta-link">Book an audit →</a>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <button class="nav-cta" onclick="window.location.href='mailto:hello@strataforge3.com?subject=AI%20Production%20Risk%20Audit%20-%20Inquiry'">Book an audit</button>
+      <button class="nav-toggle" aria-label="Toggle menu">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="1" y1="4" x2="17" y2="4"/><line x1="1" y1="9" x2="17" y2="9"/><line x1="1" y1="14" x2="17" y2="14"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span>HOW IT RUNS</div>
+      <h1>Two weeks.<br>One report. <span class="accent">No retainer.</span></h1>
+      <p class="page-sub">A fixed-scope engagement from first contact to final debrief. No open-ended discovery phase, no scope creep — the same three stages, every time.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section>
+    <div class="wrap">
+      <div class="panel" style="padding:44px;">
+        <div class="process-list">
+          <div class="process-item">
+            <div class="process-num">1</div>
+            <div>
+              <h4>Intake<span class="days">DAYS 1–2</span></h4>
+              <p>A structured questionnaire covering the system's architecture, data flows, and current ownership. Access to architecture docs and the relevant repo. One technical interview with the team that built the system, to fill in what the docs don't cover.</p>
+            </div>
+          </div>
+          <div class="process-item">
+            <div class="process-num">2</div>
+            <div>
+              <h4>Audit<span class="days">DAYS 3–9</span></h4>
+              <p>Each of the four risk surfaces — data exposure, architecture brittleness, output reliability, operational readiness — is reviewed in turn. Every finding is scored independently on severity and likelihood, then ranked into Critical, High, or Watch.</p>
+            </div>
+          </div>
+          <div class="process-item">
+            <div class="process-num">3</div>
+            <div>
+              <h4>Report &amp; debrief<span class="days">DAYS 10–14</span></h4>
+              <p>A ranked findings document — one-page executive summary, findings list with recommended fixes, and a technical appendix. Followed by a 60–90 minute walkthrough call to go through what matters most and what to fix first.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">WHY FIXED SCOPE</span>
+        <h2>No open-ended engagement, no surprise invoice.</h2>
+        <p>A fixed two-week window and a fixed price, agreed before the work starts. That's deliberate — it removes the usual fear of scope creep on your side, and it matches what's actually deliverable on ours. The audit answers one question well, rather than drifting into an unscoped advisory relationship.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">AFTER THE AUDIT</span>
+        <h2>The report is the spec for what comes next.</h2>
+        <p>Critical and High findings become scoped, fixed-price remediation quotes — priced individually, not as a retainer. You decide which to act on and in what order. There's no obligation to continue past the report.</p>
+      </div>
+      <div class="hero-row" style="margin-top:8px;">
+        <button class="btn-primary" onclick="window.location.href='pricing.html'">View pricing</button>
+        <button class="btn-secondary" onclick="window.location.href='audit-offer.html'">Back to the offer</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="wrap">
+      <h2>Know exactly where the risk is before someone else finds it.</h2>
+      <p>A 20-minute call to see if an audit makes sense for what you've built.</p>
+      <button class="btn-primary" style="padding:15px 32px; font-size:15.5px;" onclick="window.location.href='contact.html'">Book a 20-minute call</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="fm">
+          <svg viewBox="0 0 100 100" fill="none">
+            <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#markGrad)"/>
+            <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#14153E"/>
+          </svg>
+          <span class="wordmark">STRATA<em>FORGE3</em></span>
+        </div>
+        <p class="ftag">Engineered for production. Where data infrastructure gets forged.</p>
+      </div>
+      <div class="fcols">
+        <div class="fcol">
+          <h5>Site</h5>
+          <a href="index.html">Home</a>
+          <a href="audit-offer.html">Audit Offer</a>
+          <a href="process.html">Process</a>
+          <a href="pricing.html">Pricing</a>
+        </div>
+        <div class="fcol">
+          <h5>Get in touch</h5>
+          <a href="contact.html">Contact</a>
+          <a href="mailto:hello@strataforge3.com">hello@strataforge3.com</a>
+        </div>
+      </div>
+    </div>
+    <div class="fbottom">
+      <span>© 2026 Strataforge3. All rights reserved.</span>
+      <span>strataforge3.com</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>
