@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strataforge Sentinel — Production AI Observability</title>
+<meta name="description" content="Continuous observability for production AI models. Detect silent failure, explain decisions, govern with confidence. Live API. Reports in 5–7 days.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg:        #14153E;
+  --bg2:       #1B1C4C;
+  --bg3:       #22245A;
+  --border:    rgba(90,100,220,0.18);
+  --border2:   rgba(255,138,61,0.18);
+  --text:      #F6F5F2;
+  --muted:     rgba(220,218,240,0.55);
+  --orange:    #FF8A3D;
+  --orange2:   #FFB85C;
+  --crimson:   #C2342A;
+  --teal:      #14B8A9;
+  --teal2:     #0D9488;
+  --gold:      #E8B020;
+  --blue:      #6270F0;
+  --blue2:     #8490FF;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--crimson); color: #fff; }
+
+/* ── Ambient ── */
+.ambient-nodes {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image: radial-gradient(circle, rgba(180,185,255,0.08) 1px, transparent 1.5px);
+  background-size: 54px 54px;
+  mask-image: radial-gradient(ellipse 900px 600px at 80% 10%, black 0%, transparent 70%);
+}
+.hex-cluster {
+  position: fixed; top: 0; right: 0; width: 580px; height: 580px;
+  pointer-events: none; z-index: 0; opacity: 0.9;
+}
+
+/* ── Nav ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 72px;
+  background: rgba(20,21,62,0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-mark { display: flex; align-items: center; gap: 10px; }
+.nav-mark svg { width: 28px; height: 28px; flex-shrink: 0; }
+.nav-brand { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 16px; }
+.nav-sentinel { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--orange2); letter-spacing: 0.06em; margin-left: 4px; border: 1px solid rgba(255,184,92,0.3); padding: 2px 7px; border-radius: 4px; }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a { font-size: 13.5px; color: var(--muted); transition: color .15s; }
+.nav-links a:hover { color: var(--text); }
+.live-dot {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--teal);
+}
+.live-dot::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--teal); box-shadow: 0 0 6px var(--teal);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+.btn-primary {
+  background: linear-gradient(135deg, var(--orange), var(--crimson));
+  color: #1A0E04; font-weight: 700; font-size: 13.5px;
+  padding: 10px 20px; border: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: transform .15s, box-shadow .15s; font-family: 'Inter', sans-serif;
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(255,107,53,0.3); }
+.btn-ghost {
+  background: transparent; color: var(--text);
+  border: 1px solid rgba(246,245,242,0.15);
+  font-size: 13.5px; font-weight: 500; padding: 10px 20px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif;
+  transition: border-color .15s;
+}
+.btn-ghost:hover { border-color: var(--orange); }
+.btn-teal {
+  background: var(--teal2); color: #fff; font-weight: 600; font-size: 13.5px;
+  padding: 10px 20px; border: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif;
+  transition: background .15s;
+}
+.btn-teal:hover { background: var(--teal); }
+
+/* ── Grid bg ── */
+.grid-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(98,112,240,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(98,112,240,0.04) 1px, transparent 1px);
+  background-size: 52px 52px;
+}
+.glow-orange { position:absolute; width:500px; height:400px; border-radius:50%; background:radial-gradient(ellipse,rgba(255,138,61,0.08) 0%,transparent 70%); top:-80px; right:-60px; pointer-events:none; }
+.glow-blue   { position:absolute; width:400px; height:400px; border-radius:50%; background:radial-gradient(ellipse,rgba(98,112,240,0.07) 0%,transparent 70%); bottom:0; left:-40px; pointer-events:none; }
+
+/* ── Hero ── */
+.hero { min-height: 90vh; display: flex; flex-direction: column; justify-content: center; padding: 5rem 32px 4rem; position: relative; overflow: hidden; }
+.hero-inner { max-width: 980px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+.eyebrow { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--orange2); margin-bottom:1.1rem; display:flex; align-items:center; gap:8px; }
+.eyebrow::before { content:''; width:20px; height:1px; background:var(--orange2); }
+.hero h1 { font-family:'Playfair Display',serif; font-size:clamp(2.4rem,5.5vw,4.6rem); line-height:1.08; margin-bottom:1.1rem; }
+.hero h1 em { font-style:italic; color:var(--orange2); }
+.tagline { font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--teal); margin-bottom:1.6rem; padding:.45rem 0; border-top:1px solid rgba(20,184,169,0.2); border-bottom:1px solid rgba(20,184,169,0.2); max-width:520px; }
+.hero-sub { font-size:16.5px; line-height:1.75; color:var(--muted); max-width:520px; margin-bottom:1.8rem; }
+.hero-stats { display:flex; gap:2.5rem; flex-wrap:wrap; margin-bottom:1.8rem; }
+.stat-num { font-family:'Playfair Display',serif; font-size:1.9rem; color:var(--orange2); line-height:1; }
+.stat-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:rgba(220,218,240,0.3); margin-top:3px; }
+.hero-cta { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:1.8rem; }
+.trust-strip { display:flex; gap:1.5rem; flex-wrap:wrap; align-items:center; padding-top:1.1rem; border-top:1px solid var(--border); }
+.trust-item { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:rgba(220,218,240,0.28); display:flex; align-items:center; gap:5px; }
+.trust-item span { color:var(--teal); }
+
+/* ── Section ── */
+.divider { width:100%; height:1px; background:var(--border); }
+.section { padding:3.5rem 32px; max-width:980px; margin:0 auto; }
+.sec-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--orange); margin-bottom:.5rem; }
+.sec-label.teal { color:var(--teal); }
+.sec-label.gold { color:var(--gold); }
+.section h2 { font-family:'Playfair Display',serif; font-size:clamp(1.5rem,3vw,2.3rem); line-height:1.15; margin-bottom:.8rem; }
+.body-text { font-size:14.5px; line-height:1.78; color:var(--muted); max-width:520px; }
+
+/* ── Layer cards ── */
+.layer-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); margin-top:1.6rem; }
+.layer-card { background:var(--bg); padding:1.5rem; transition:background .2s; }
+.layer-card:hover { background:var(--bg2); }
+.layer-tag { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; padding:2px 8px; border:1px solid; display:inline-block; margin-bottom:.8rem; }
+.layer-tag.detect  { color:var(--orange2);  border-color:rgba(255,184,92,0.3);  background:rgba(255,138,61,0.07); }
+.layer-tag.explain { color:var(--teal);     border-color:rgba(20,184,169,0.3);  background:rgba(20,184,169,0.07); }
+.layer-tag.govern  { color:var(--gold);     border-color:rgba(232,176,32,0.3);  background:rgba(232,176,32,0.07); }
+.layer-card h3 { font-size:15.5px; font-weight:600; margin-bottom:4px; }
+.layer-tagline { font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.08em; font-style:italic; margin-bottom:.6rem; }
+.layer-tagline.detect  { color:var(--orange2); }
+.layer-tagline.explain { color:var(--teal); }
+.layer-tagline.govern  { color:var(--gold); }
+.layer-card p { font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:.8rem; }
+.layer-features { list-style:none; }
+.layer-features li { font-size:12.5px; color:var(--muted); padding:.2rem 0; display:flex; align-items:flex-start; gap:6px; line-height:1.4; }
+
+/* ── Diff grid ── */
+.diff-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); margin-top:1.6rem; }
+.diff-card { background:var(--bg); padding:1.4rem; transition:background .2s; }
+.diff-card:hover { background:var(--bg2); }
+.vs-them { font-family:'JetBrains Mono',monospace; font-size:10.5px; color:rgba(239,68,68,0.65); margin-bottom:.35rem; text-decoration:line-through; }
+.vs-us { font-size:14px; font-weight:600; color:var(--teal); margin-bottom:.45rem; }
+.diff-card p { font-size:12.5px; color:var(--muted); line-height:1.6; }
+
+/* ── Before/After ── */
+.ba { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); border:1px solid var(--border); margin-top:1.4rem; }
+.ba-col { padding:1.5rem; }
+.ba-col.before { background:rgba(239,68,68,0.03); }
+.ba-col.after  { background:rgba(255,138,61,0.04); }
+.ba-head { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; margin-bottom:.9rem; }
+.ba-head.before { color:#EF4444; }
+.ba-head.after  { color:var(--orange2); }
+.ba-item { display:flex; align-items:flex-start; gap:6px; margin-bottom:.55rem; font-size:13px; color:var(--muted); line-height:1.5; }
+.x-icon    { color:#EF4444; flex-shrink:0; font-size:11px; }
+.check-icon { color:var(--orange2); flex-shrink:0; font-size:11px; }
+
+/* ── EU Banner ── */
+.eu-banner { background:rgba(232,176,32,0.05); border:1px solid rgba(232,176,32,0.2); padding:1.1rem 1.4rem; margin-top:1.6rem; display:flex; gap:1.1rem; align-items:flex-start; }
+.eu-icon { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); background:rgba(232,176,32,0.08); border:1px solid rgba(232,176,32,0.22); padding:3px 9px; flex-shrink:0; white-space:nowrap; margin-top:2px; }
+.eu-banner h4 { font-size:14px; font-weight:600; margin-bottom:.25rem; }
+.eu-banner p  { font-size:12.5px; color:var(--muted); line-height:1.6; }
+
+/* ── Value grid ── */
+.value-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); margin-top:1px; }
+.value-cell { background:var(--bg); padding:1.3rem; transition:background .2s; }
+.value-cell:hover { background:var(--bg2); }
+.value-num { font-family:'Playfair Display',serif; font-size:1.7rem; color:var(--orange2); margin-bottom:.12rem; }
+.value-title { font-size:13.5px; font-weight:600; margin-bottom:.22rem; }
+.value-desc { font-size:12px; color:var(--muted); line-height:1.55; }
+
+/* ── Timeline ── */
+.timeline { position:relative; padding:1.4rem 0; }
+.timeline::before { content:''; position:absolute; left:15px; top:0; bottom:0; width:1px; background:var(--border); }
+.tl-item { display:flex; gap:1.4rem; margin-bottom:1.5rem; align-items:flex-start; }
+.tl-dot { width:30px; height:30px; border-radius:50%; border:1px solid var(--border); background:var(--bg2); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--orange2); position:relative; z-index:1; }
+.tl-dot.alert { border-color:#EF4444; color:#EF4444; background:rgba(239,68,68,0.08); }
+.tl-content h4 { font-size:13.5px; font-weight:600; margin-bottom:3px; }
+.tl-content p  { font-size:12.5px; color:var(--muted); line-height:1.55; }
+.tag-alert { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:#EF4444; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); padding:2px 6px; margin-bottom:.2rem; }
+
+/* ── Audit grid ── */
+.audit-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(225px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); margin-top:1.4rem; }
+.audit-cell { background:var(--bg); padding:1.25rem; transition:background .2s; }
+.audit-cell:hover { background:var(--bg2); }
+.audit-icon { font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--orange); margin-bottom:.45rem; }
+.audit-cell h4 { font-size:13.5px; font-weight:600; margin-bottom:.25rem; }
+.audit-cell p  { font-size:12px; color:var(--muted); line-height:1.55; }
+
+/* ── Process ── */
+.process { display:flex; overflow-x:auto; margin-top:1.4rem; scrollbar-width:none; }
+.process::-webkit-scrollbar { display:none; }
+.process-step { flex:1; min-width:145px; padding:1.1rem .9rem; border-top:2px solid transparent; position:relative; transition:border-color .2s; }
+.process-step:hover { border-top-color:var(--orange); }
+.process-step::after { content:'→'; position:absolute; right:-9px; top:50%; transform:translateY(-50%); color:rgba(255,138,61,0.25); font-size:.9rem; z-index:1; }
+.process-step:last-child::after { display:none; }
+.step-num { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--orange); margin-bottom:.45rem; }
+.process-step h4 { font-size:13px; font-weight:600; margin-bottom:.18rem; line-height:1.3; }
+.process-step p  { font-size:11.5px; color:var(--muted); line-height:1.45; }
+
+/* ── Deliverables ── */
+.deliverables { border:1px solid var(--border); margin-top:1.4rem; }
+.del-row { display:flex; align-items:flex-start; gap:1rem; padding:.9rem 1.25rem; border-bottom:1px solid var(--border); transition:background .2s; }
+.del-row:last-child { border-bottom:none; }
+.del-row:hover { background:var(--bg2); }
+.del-idx { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--orange); min-width:20px; padding-top:3px; }
+.del-row h4 { font-size:13.5px; font-weight:600; margin-bottom:.1rem; }
+.del-row p  { font-size:12px; color:var(--muted); line-height:1.5; }
+
+/* ── API ── */
+.api-block { background:var(--bg2); border:1px solid var(--border); padding:1.4rem; margin-top:1.4rem; border-top:2px solid var(--orange); }
+.api-block pre { font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.75; overflow-x:auto; white-space:pre-wrap; word-break:break-all; }
+.api-block .kw  { color:#a78bfa; }
+.api-block .str { color:#6ee7b7; }
+.api-block .num { color:#fbbf24; }
+.api-block .cm  { color:rgba(220,218,240,0.26); }
+.api-caps { display:grid; grid-template-columns:repeat(auto-fit,minmax(185px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); border-top:none; }
+.api-cap { background:var(--bg); padding:1rem 1.1rem; }
+.api-cap-label { font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--orange); margin-bottom:.35rem; }
+.api-cap p { font-size:12px; color:var(--muted); line-height:1.5; }
+.demo-banner { background:rgba(20,184,169,0.05); border:1px solid rgba(20,184,169,0.18); padding:1.1rem 1.4rem; margin-top:1.6rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.demo-banner h4 { font-size:14px; font-weight:600; margin-bottom:.18rem; }
+.demo-banner p  { font-size:12px; color:var(--muted); line-height:1.5; }
+
+/* ── Pricing ── */
+.pricing-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(248px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); margin-top:1.4rem; }
+.pricing-card { background:var(--bg); padding:1.6rem; position:relative; transition:background .2s; }
+.pricing-card:hover { background:var(--bg2); }
+.pricing-card.featured { background:var(--bg2); border-top:2px solid var(--orange); }
+.pricing-badge { font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--orange2); background:rgba(255,138,61,0.1); border:1px solid rgba(255,138,61,0.2); padding:2px 8px; display:inline-block; margin-bottom:.7rem; }
+.pricing-tier  { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:.35rem; }
+.pricing-price { font-family:'Playfair Display',serif; font-size:2rem; line-height:1; margin-bottom:.18rem; }
+.pricing-sub   { font-size:12px; color:var(--muted); margin-bottom:1rem; line-height:1.5; }
+.pricing-features { list-style:none; margin-bottom:1.4rem; }
+.pricing-features li { font-size:12.5px; color:var(--muted); padding:.22rem 0; display:flex; align-items:flex-start; gap:6px; line-height:1.4; }
+.pricing-features li::before { content:'✓'; color:var(--orange2); flex-shrink:0; font-weight:600; }
+.pricing-note  { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.03em; color:rgba(220,218,240,0.22); margin-top:.6rem; }
+.quote-trigger { display:inline-flex; align-items:center; gap:6px; background:transparent; border:1px solid var(--orange); color:var(--orange); padding:.55rem 1.1rem; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:background .2s; margin-top:1rem; }
+.quote-trigger:hover { background:rgba(255,138,61,0.07); }
+.tags { display:flex; gap:1.5rem; flex-wrap:wrap; margin-top:1.4rem; }
+.tag { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:rgba(220,218,240,0.3); display:flex; align-items:center; gap:4px; }
+.tag span { color:var(--teal); }
+
+/* ── CTA ── */
+.cta-section { padding:4.5rem 32px; text-align:center; position:relative; overflow:hidden; }
+.cta-section::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 70% 80% at 50% 50%,rgba(255,138,61,0.04) 0%,transparent 70%); pointer-events:none; }
+.cta-inner { max-width:540px; margin:0 auto; position:relative; z-index:1; }
+.cta-section h2 { font-family:'Playfair Display',serif; font-size:clamp(1.65rem,3vw,2.4rem); line-height:1.18; margin-bottom:.8rem; }
+.cta-section p { font-size:14.5px; color:var(--muted); margin-bottom:1.6rem; line-height:1.7; }
+.research-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(255,138,61,0.05); border:1px solid var(--border); padding:.45rem .9rem; margin-bottom:1.4rem; font-size:12.5px; color:var(--muted); }
+.research-badge strong { color:var(--orange2); font-weight:500; }
+.guarantee { margin-top:1.4rem; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:rgba(220,218,240,0.18); }
+
+/* ── Quote modal ── */
+.modal-overlay { position:fixed; inset:0; z-index:200; background:rgba(14,15,46,0.92); backdrop-filter:blur(12px); display:flex; align-items:center; justify-content:center; padding:1.5rem; }
+.modal { background:var(--bg2); border:1px solid var(--border); width:100%; max-width:560px; max-height:92vh; overflow-y:auto; position:relative; border-top:2px solid var(--orange); }
+.modal-head { padding:1.5rem 1.6rem 1rem; border-bottom:1px solid var(--border); }
+.modal-head h3 { font-family:'Playfair Display',serif; font-size:1.5rem; }
+.modal-head p  { font-size:13px; color:var(--muted); margin-top:.25rem; line-height:1.6; }
+.modal-close { position:absolute; top:.9rem; right:1.1rem; background:transparent; border:none; color:var(--muted); font-size:1rem; cursor:pointer; transition:color .2s; }
+.modal-close:hover { color:var(--text); }
+.modal-body { padding:1.25rem 1.6rem; }
+.form-row { margin-bottom:.9rem; }
+.form-row label { display:block; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:.35rem; }
+.form-row input,.form-row select,.form-row textarea { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'Inter',sans-serif; font-size:13.5px; padding:.52rem .8rem; transition:border-color .2s; outline:none; }
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus { border-color:var(--orange); }
+.form-row textarea { resize:vertical; min-height:84px; }
+.checkboxes { display:flex; flex-direction:column; gap:.45rem; }
+.checkbox-item { display:flex; align-items:center; gap:.5rem; font-size:13px; color:var(--muted); cursor:pointer; }
+.checkbox-item input[type="checkbox"] { accent-color:var(--orange); width:13px; height:13px; cursor:pointer; }
+.modal-foot { padding:.9rem 1.6rem 1.25rem; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.modal-foot-note { font-family:'JetBrains Mono',monospace; font-size:10px; color:rgba(220,218,240,0.22); }
+.form-success { padding:2.25rem 1.6rem; text-align:center; }
+.form-success h4 { font-family:'Playfair Display',serif; font-size:1.3rem; margin-bottom:.45rem; }
+.form-success p  { font-size:13.5px; color:var(--muted); line-height:1.65; }
+
+/* ── Footer ── */
+footer { border-top:1px solid var(--border); padding:40px 32px; }
+.footer-top { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:28px; max-width:980px; margin:0 auto 28px; }
+.fm { display:flex; align-items:center; gap:9px; }
+.fm svg { width:22px; height:22px; }
+.fm .wordmark { font-family:'Playfair Display',serif; font-weight:700; font-size:15px; }
+.fm em { font-style:normal; color:var(--orange); }
+.ftag { font-size:12.5px; color:rgba(220,218,240,0.38); margin-top:7px; max-width:260px; line-height:1.6; }
+.fcols { display:flex; gap:56px; }
+.fcol h5 { font-family:'JetBrains Mono',monospace; font-size:10px; color:rgba(220,218,240,0.35); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px; }
+.fcol a { display:block; font-size:13px; color:rgba(220,218,240,0.5); margin-bottom:9px; transition:color .15s; }
+.fcol a:hover { color:var(--text); }
+.fbottom { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-top:20px; border-top:1px solid var(--border); max-width:980px; margin:0 auto; }
+.fbottom span { font-size:12px; color:rgba(220,218,240,0.3); }
+
+/* ── Responsive ── */
+@media (max-width:640px) {
+  nav { padding:0 20px; }
+  .nav-links { display:none; }
+  .hero { padding:3.5rem 20px 2.5rem; }
+  .section { padding:2.75rem 20px; }
+  .ba { grid-template-columns:1fr; }
+  .layer-grid,.diff-grid { grid-template-columns:1fr; }
+  .cta-section { padding:3.25rem 20px; }
+  footer { padding:32px 20px; }
+  .footer-top { flex-direction:column; }
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient background -->
+<div class="ambient-nodes"></div>
+<svg class="hex-cluster" viewBox="0 0 580 580" fill="none">
+  <defs>
+    <linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF8A3D"/>
+      <stop offset="100%" stop-color="#C2342A"/>
+    </linearGradient>
+  </defs>
+  <polygon points="490,35 548,68 548,136 490,169 432,136 432,68" fill="url(#hg)" opacity="0.88"/>
+  <polygon points="408,82 458,110 458,166 408,194 358,166 358,110" fill="url(#hg)" opacity="0.58"/>
+  <polygon points="510,158 568,191 568,258 510,291 452,258 452,191" fill="url(#hg)" opacity="0.72"/>
+  <polygon points="428,218 475,244 475,299 428,325 381,299 381,244" fill="url(#hg)" opacity="0.42"/>
+  <g stroke="#ACADD4" stroke-width="0.5" opacity="0.14">
+    <line x1="490" y1="102" x2="408" y2="148"/>
+    <line x1="408" y1="148" x2="510" y2="224"/>
+    <line x1="510" y1="224" x2="428" y2="262"/>
+  </g>
+</svg>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-mark">
+    <svg viewBox="0 0 100 100" fill="none">
+      <defs>
+        <linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#FF8A3D"/>
+          <stop offset="100%" stop-color="#C2342A"/>
+        </linearGradient>
+      </defs>
+      <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#ng)"/>
+      <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#1E2068"/>
+    </svg>
+    <span class="nav-brand">STRATAFORGE3</span>
+    <span class="nav-sentinel">SENTINEL</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="#why-sentinel">Why Sentinel</a>
+    <a href="#audit-scope">Audit scope</a>
+    <a href="#api-access">API</a>
+    <a href="#pricing">Pricing</a>
+    <a href="contact.html" class="live-dot">Live system</a>
+  </div>
+  <button class="btn-primary" onclick="openModal()">Get a quote →</button>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="grid-bg"></div>
+  <div class="glow-orange"></div>
+  <div class="glow-blue"></div>
+  <div class="hero-inner">
+    <p class="eyebrow">Strataforge3 · Sentinel · Production AI Observability</p>
+    <h1>Know your model<br>still <em>works.</em></h1>
+    <div class="tagline">AI Observability for Production Systems · Detect · Explain · Govern</div>
+    <p class="hero-sub">Production AI models degrade quietly after deployment. Strataforge Sentinel gives you continuous observability into the model itself — not just your infrastructure — optimises against your actual business cost, and produces the governance documentation your regulators require.</p>
+    <div class="hero-stats">
+      <div><div class="stat-num">Live</div><div class="stat-label">System validated on real production model</div></div>
+      <div><div class="stat-num">5–7d</div><div class="stat-label">Days to your audit report</div></div>
+      <div><div class="stat-num">11+</div><div class="stat-label">IEEE / Springer / Wiley publications</div></div>
+    </div>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="openModal()">Get a custom quote →</button>
+      <a href="contact.html" class="btn-teal">Book a scoping call ↗</a>
+      <a href="mailto:hello@strataforge3.com" class="btn-ghost">Email us ↗</a>
+    </div>
+    <div class="trust-strip">
+      <span class="trust-item"><span>◈</span> Read-only · No system access</span>
+      <span class="trust-item"><span>◈</span> EU AI Act Articles 9–17</span>
+      <span class="trust-item"><span>◈</span> DORA aligned</span>
+      <span class="trust-item"><span>◈</span> No Kubernetes required</span>
+      <span class="trust-item"><span>◈</span> Global deployment</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Three layers -->
+<div class="section">
+  <p class="sec-label">The full package</p>
+  <h2>Three layers. One system. Zero observability gaps.</h2>
+  <p class="body-text">Strataforge Sentinel is not a drift detector. It is the AI observability and governance layer between your model deployment and your regulatory accountability — combining continuous model monitoring, explainability, and documentation into a single audit-ready package.</p>
+  <div class="layer-grid">
+    <div class="layer-card">
+      <div class="layer-tag detect">Sentinel Detect</div>
+      <h3>Continuous Model Observability</h3>
+      <div class="layer-tagline detect">Know before your losses do.</div>
+      <p>Always-on visibility into whether your production model is still behaving the way it did when it was approved — recall, precision, and feature-level signal health tracked across every production period, not just at deployment.</p>
+      <ul class="layer-features">
+        <li><span style="color:#FFB85C;flex-shrink:0">✓</span> Recall, AUC, FPR decay timelines</li>
+        <li><span style="color:#FFB85C;flex-shrink:0">✓</span> Feature-level statistical drift signal (PSI + KS)</li>
+        <li><span style="color:#FFB85C;flex-shrink:0">✓</span> Cost-aware threshold optimization</li>
+        <li><span style="color:#FFB85C;flex-shrink:0">✓</span> Automated alert triggers on performance decay</li>
+        <li><span style="color:#FFB85C;flex-shrink:0">✓</span> Live model health, not just server uptime</li>
+      </ul>
+    </div>
+    <div class="layer-card">
+      <div class="layer-tag explain">Sentinel Explain</div>
+      <h3>Explainability &amp; Transparency</h3>
+      <div class="layer-tagline explain">A decision your regulator can read.</div>
+      <p>ShieldXAI transforms black-box AI models into interpretable decisions — the auditability that regulated environments require, not an afterthought bolted onto a dashboard.</p>
+      <ul class="layer-features">
+        <li><span style="color:#14B8A9;flex-shrink:0">✓</span> Feature attribution per decision</li>
+        <li><span style="color:#14B8A9;flex-shrink:0">✓</span> Counterfactual explanation generation</li>
+        <li><span style="color:#14B8A9;flex-shrink:0">✓</span> Glass-box reporting for compliance</li>
+        <li><span style="color:#14B8A9;flex-shrink:0">✓</span> Bias and fairness indicators</li>
+        <li><span style="color:#14B8A9;flex-shrink:0">✓</span> Plain-language executive summaries</li>
+      </ul>
+    </div>
+    <div class="layer-card">
+      <div class="layer-tag govern">Sentinel Govern</div>
+      <h3>Governance &amp; Regulatory Compliance</h3>
+      <div class="layer-tagline govern">The documentation trail before the auditor calls.</div>
+      <p>Strataforge governance infrastructure translates objectives into measurable MLOps metrics. Produces audit-ready documentation for EU AI Act Articles 9–17, DORA, and Shariah governance standards.</p>
+      <ul class="layer-features">
+        <li><span style="color:#E8B020;flex-shrink:0">✓</span> EU AI Act Articles 9–17 documentation package</li>
+        <li><span style="color:#E8B020;flex-shrink:0">✓</span> DORA-aligned audit trail and logging</li>
+        <li><span style="color:#E8B020;flex-shrink:0">✓</span> Shariah compliance scoring</li>
+        <li><span style="color:#E8B020;flex-shrink:0">✓</span> Risk management system documentation</li>
+        <li><span style="color:#E8B020;flex-shrink:0">✓</span> Regulatory-ready technical records</li>
+      </ul>
+    </div>
+  </div>
+  <button class="quote-trigger" onclick="openModal()">◈ Ask about a custom package →</button>
+</div>
+
+<div class="divider"></div>
+
+<!-- Differentiation -->
+<div id="differentiation" class="section">
+  <p class="sec-label teal">What's different</p>
+  <h2>Why teams choose Sentinel over generic monitoring tools</h2>
+  <p class="body-text">Most production ML monitoring tools were built to watch infrastructure — uptime, latency, throughput. Sentinel watches the model: whether its decisions are still correct, in systems where the cost of a wrong output is never equal to the cost of the right one.</p>
+  <div class="diff-grid">
+    <div class="diff-card">
+      <div class="vs-them">Dashboards that watch your infrastructure</div>
+      <div class="vs-us">Observability for the model, not the server</div>
+      <p>Uptime monitors tell you the service is responding. They say nothing about whether the model's decisions are still correct. Sentinel watches the thing that actually matters.</p>
+    </div>
+    <div class="diff-card">
+      <div class="vs-them">Accuracy-only optimization</div>
+      <div class="vs-us">Cost-aware thresholding</div>
+      <p>A model can be "accurate" and still bleed money if costs aren't weighted correctly. Sentinel optimizes against your actual business cost function, not a generic F1 score.</p>
+    </div>
+    <div class="diff-card">
+      <div class="vs-them">Enterprise infrastructure requirement</div>
+      <div class="vs-us">No Kubernetes. No platform lock-in.</div>
+      <p>Built for lean teams and emerging-market fintech. Runs as a lightweight service — not a six-month infrastructure project before you see any value.</p>
+    </div>
+    <div class="diff-card">
+      <div class="vs-them">Charts nobody outside engineering reads</div>
+      <div class="vs-us">Audit-ready documentation, by design</div>
+      <p>Every other platform stops at a chart. Sentinel produces the executive summary and regulatory mapping your compliance team and board actually need.</p>
+    </div>
+    <div class="diff-card">
+      <div class="vs-them">Zero governance layer for regulated finance</div>
+      <div class="vs-us">Shariah-aware governance built in</div>
+      <p>No competitor in this space offers a governance layer aligned with Islamic finance principles. For GCC and South Asian institutions, this isn't a nice-to-have.</p>
+    </div>
+    <div class="diff-card">
+      <div class="vs-them">Built for Silicon Valley, sold everywhere</div>
+      <div class="vs-us">Built for global fintech constraints</div>
+      <p>Most observability platforms assume Western enterprise budgets. Sentinel was designed for the constraints real teams operate under globally — then proven to scale.</p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Why Sentinel / Value -->
+<div id="why-sentinel" class="section">
+  <p class="sec-label">Why Strataforge Sentinel</p>
+  <h2>What you actually get</h2>
+  <p class="body-text">A production model that looks operational can have its recall quietly collapse. Sentinel gives you observability, explainability, and governance documentation — before losses appear, not after.</p>
+  <div class="ba">
+    <div class="ba-col before">
+      <div class="ba-head before">⚠ Without Sentinel</div>
+      <div class="ba-item"><span class="x-icon">✕</span>Silent recall decay — no alerts fire</div>
+      <div class="ba-item"><span class="x-icon">✕</span>Infrastructure stays green while model fails</div>
+      <div class="ba-item"><span class="x-icon">✕</span>Degradation discovered only after losses compound</div>
+      <div class="ba-item"><span class="x-icon">✕</span>No visibility into which signals are shifting</div>
+      <div class="ba-item"><span class="x-icon">✕</span>No documentation when the regulator asks</div>
+      <div class="ba-item"><span class="x-icon">✕</span>Retraining triggered too late, at full cost</div>
+    </div>
+    <div class="ba-col after">
+      <div class="ba-head after">◈ With Sentinel</div>
+      <div class="ba-item"><span class="check-icon">✓</span>Performance decay caught at the signal level before recall drops</div>
+      <div class="ba-item"><span class="check-icon">✓</span>Recall, AUC, FPR trends surfaced in plain language</div>
+      <div class="ba-item"><span class="check-icon">✓</span>Alert thresholds calibrated to your actual cost function</div>
+      <div class="ba-item"><span class="check-icon">✓</span>Explainability — decisions your compliance team can verify</div>
+      <div class="ba-item"><span class="check-icon">✓</span>EU AI Act Articles 9–17 documentation produced</div>
+      <div class="ba-item"><span class="check-icon">✓</span>Threshold optimization recovers recall without retraining</div>
+    </div>
+  </div>
+  <div class="eu-banner">
+    <div class="eu-icon">EU AI Act · Aug 2026</div>
+    <div>
+      <h4>High-risk AI obligations are live in August 2026</h4>
+      <p>Credit scoring and fraud detection are explicitly named under Annex III. Existing production models are not exempt. Sentinel produces the technical documentation Articles 9–17 require, in 5–7 days, without system access. Extraterritorial scope: if your AI affects EU residents anywhere in the world, it applies to you.</p>
+    </div>
+  </div>
+  <div class="value-grid">
+    <div class="value-cell"><div class="value-num">Live</div><div class="value-title">Real production model</div><div class="value-desc">Methodology validated on an actual trained model across simulated production periods, not a toy dataset.</div></div>
+    <div class="value-cell"><div class="value-num">5–7d</div><div class="value-title">Not months</div><div class="value-desc">Full diagnostic report in under one week. No lengthy engagement. No retainer required to start.</div></div>
+    <div class="value-cell"><div class="value-num">3</div><div class="value-title">Layers in one package</div><div class="value-desc">Detect. Explain. Govern. No platform combines model observability, explainability, and regulatory documentation.</div></div>
+    <div class="value-cell"><div class="value-num">11+</div><div class="value-title">Published research</div><div class="value-desc">IEEE/Springer/Wiley publications in production ML, model observability, XAI, and AI governance.</div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Problem / Timeline -->
+<div class="section">
+  <p class="sec-label">The problem</p>
+  <h2>What happens after deployment</h2>
+  <p class="body-text" style="margin-bottom:1.6rem">Data shifts. Patterns evolve. User behaviour changes. The model's learned relationships break down — but without observability, nobody notices. This is a global production ML pattern, not a regional one.</p>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot">P0</div><div class="tl-content"><h4>Deployment baseline</h4><p>Model trained and validated. Strong ROC-AUC on held-out test data. Team moves on to the next priority.</p></div></div>
+    <div class="tl-item"><div class="tl-dot">P1–2</div><div class="tl-content"><h4>Performance begins shifting</h4><p>Underlying feature distributions begin moving. Without observability, this signal is invisible — the model still looks fine from the outside.</p></div></div>
+    <div class="tl-item"><div class="tl-dot">P3–4</div><div class="tl-content"><h4>Degradation compounds</h4><p>The shift continues. Recall and precision begin moving — sometimes in directions that look fine in aggregate but aren't.</p></div></div>
+    <div class="tl-item"><div class="tl-dot alert">P5</div><div class="tl-content"><span class="tag-alert">Alert fires</span><h4>Recall alert triggers</h4><p>Recall drops below the defined safety threshold. Sentinel fires the alert. This is the moment that matters — before losses compound further, not after.</p></div></div>
+  </div>
+  <div style="padding:.9rem 1.1rem;border-left:2px solid var(--orange);background:rgba(255,138,61,0.04);font-size:13.5px;color:var(--muted);line-height:1.7;font-style:italic;margin-top:1.1rem">
+    "A model that looks operational can still be losing the business money. The infrastructure tells you the server is up. Only Sentinel tells you whether the model is."
+    <div style="margin-top:.3rem;font-style:normal;font-size:11px;color:rgba(220,218,240,0.28);font-family:'JetBrains Mono',monospace;letter-spacing:.06em">— Lightweight Model Observability Framework for Production Systems · Under journal review</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Audit scope -->
+<div id="audit-scope" class="section">
+  <p class="sec-label">Audit scope</p>
+  <h2>What the audit covers</h2>
+  <p class="body-text">A non-invasive, read-only diagnostic across six dimensions of production model health. No codebase access. No system changes. No downtime.</p>
+  <div class="audit-grid">
+    <div class="audit-cell"><p class="audit-icon">01 — observe</p><h4>Model performance health</h4><p>Recall, precision, AUC, and FPR trends — the questions a CRO actually asks, not a chart only an engineer reads.</p></div>
+    <div class="audit-cell"><p class="audit-icon">02 — signal</p><h4>Feature-level signal drift</h4><p>PSI and KS tests across your top production features — the actual inputs driving decisions, not a proxy on output scores.</p></div>
+    <div class="audit-cell"><p class="audit-icon">03 — concept</p><h4>Concept drift</h4><p>Changes in the relationship between features and outcomes. We detect when your model's learned logic no longer matches reality.</p></div>
+    <div class="audit-cell"><p class="audit-icon">04 — explain</p><h4>Explainability review</h4><p>Feature attribution and counterfactual analysis. Which signals drive decisions — and whether those signals are still valid.</p></div>
+    <div class="audit-cell"><p class="audit-icon">05 — gaps</p><h4>Observability gaps</h4><p>Audit of what your current stack cannot see. Blind spots mapped against your model type, risk profile, and regulatory obligations.</p></div>
+    <div class="audit-cell"><p class="audit-icon">06 — threshold</p><h4>Cost-aware threshold fit</h4><p>Analysis of your decision boundary against actual business cost. Optimization can recover recall without model retraining.</p></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Process -->
+<div class="section">
+  <p class="sec-label">How it works</p>
+  <h2>Six-step audit process</h2>
+  <div class="process">
+    <div class="process-step"><p class="step-num">01</p><h4>Your live model</h4><p>Read-only access to prediction logs and feature distributions</p></div>
+    <div class="process-step"><p class="step-num">02</p><h4>Observability scan</h4><p>Recall, AUC, FPR trends — plus PSI + KS signal checks</p></div>
+    <div class="process-step"><p class="step-num">03</p><h4>Performance analysis</h4><p>Decay timeline across your production periods</p></div>
+    <div class="process-step"><p class="step-num">04</p><h4>XAI review</h4><p>Feature attribution and explainability analysis</p></div>
+    <div class="process-step"><p class="step-num">05</p><h4>Risk &amp; compliance</h4><p>Business cost impact and regulatory gap assessment</p></div>
+    <div class="process-step"><p class="step-num">06</p><h4>Audit report</h4><p>Delivered as PDF in 5–7 days</p></div>
+  </div>
+  <div class="tags">
+    <span class="tag"><span>✓</span> Read-only access</span>
+    <span class="tag"><span>✓</span> No system downtime</span>
+    <span class="tag"><span>✓</span> No code changes</span>
+    <span class="tag"><span>✓</span> Delivered in 5–7 days</span>
+    <span class="tag"><span>✓</span> Privacy-preserving</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Deliverables -->
+<div class="section">
+  <p class="sec-label">Deliverables</p>
+  <h2>What you receive</h2>
+  <div class="deliverables">
+    <div class="del-row"><span class="del-idx">01</span><div><h4>Model observability report</h4><p>PDF showing how your model's performance has actually moved in production — and which underlying signals explain it.</p></div></div>
+    <div class="del-row"><span class="del-idx">02</span><div><h4>Performance decay timeline</h4><p>Recall, AUC, and FPR trends across your production periods with annotated inflection points and early warning markers.</p></div></div>
+    <div class="del-row"><span class="del-idx">03</span><div><h4>Explainability review</h4><p>Feature attribution summary and counterfactual examples. Your model's decisions, explained in language your compliance team can verify.</p></div></div>
+    <div class="del-row"><span class="del-idx">04</span><div><h4>Cost-aware alert recommendations</h4><p>Monitoring thresholds calibrated to your model architecture, risk profile, and actual business cost assumptions.</p></div></div>
+    <div class="del-row"><span class="del-idx">05</span><div><h4>Regulatory documentation</h4><p>EU AI Act Articles 9–17 mapping, DORA audit trail structure, and Shariah compliance scoring where applicable.</p></div></div>
+    <div class="del-row"><span class="del-idx">06</span><div><h4>Executive summary</h4><p>One page, non-technical. Ready to share with your Head of Risk, CTO, compliance team, or board.</p></div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- API -->
+<div id="api-access" class="section">
+  <p class="sec-label teal">API access</p>
+  <h2>Integrate Sentinel into your stack</h2>
+  <p class="body-text">Run scoring, observability checks, explainability queries, and threshold diagnostics programmatically — from your CI/CD pipeline, data platform, or risk dashboard.</p>
+  <div class="demo-banner">
+    <div>
+      <h4>Production-grade governance API</h4>
+      <p>Model scoring, observability monitoring, batch analysis, and governance reporting — via a secured API. Key-protected access, provisioned on request.</p>
+    </div>
+    <button class="btn-teal" onclick="openModal()" style="flex-shrink:0">Request API Access →</button>
+  </div>
+  <div class="api-block">
+    <pre><span class="cm"># Observability check — POST /v1/sentinel/observe&#10;</span><span class="kw">import</span> requests&#10;&#10;response = requests.<span class="kw">post</span>(&#10;    <span class="str">"https://api.strataforge3.com/v1/sentinel/observe"</span>,&#10;    headers={<span class="str">"Authorization"</span>: <span class="str">"Bearer &lt;your_api_key&gt;"</span>},&#10;    json={&#10;        <span class="str">"model_id"</span>: <span class="str">"fraud_xgb_prod_v2"</span>,&#10;        <span class="str">"period"</span>: <span class="str">"2025-Q2"</span>,&#10;        <span class="str">"features"</span>: [<span class="str">"amount"</span>, <span class="str">"velocity_24h"</span>, <span class="str">"merchant_risk"</span>],&#10;        <span class="str">"alert_threshold_psi"</span>: <span class="num">0.25</span>,&#10;        <span class="str">"explain"</span>: <span class="num">true</span>&#10;    }&#10;)&#10;&#10;<span class="cm"># Returns: recall trend · alert status · signal drift per feature · feature attribution&#10;</span>data = response.json()&#10;<span class="kw">print</span>(data[<span class="str">"recall_current"</span>], data[<span class="str">"alert_status"</span>], data[<span class="str">"top_signal_change"</span>])</pre>
+  </div>
+  <div class="api-caps">
+    <div class="api-cap"><div class="api-cap-label">Endpoints</div><p>/observe · /recall · /explain · /threshold · /report · /alerts</p></div>
+    <div class="api-cap"><div class="api-cap-label">Formats</div><p>JSON · PDF export · Webhook alerts · CSV</p></div>
+    <div class="api-cap"><div class="api-cap-label">Auth</div><p>Bearer token · Key rotation · IP allowlisting</p></div>
+    <div class="api-cap"><div class="api-cap-label">Status</div><p>Live · Provisioned per engagement</p></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Pricing -->
+<div id="pricing" class="section">
+  <p class="sec-label">Investment</p>
+  <h2>Flexible tiers — or ask for something custom</h2>
+  <p class="body-text">No retainer required to start. No lock-in. The audit tells you what is breaking. Next steps are your decision.</p>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-tier">Sentinel Detect · One-time Audit</div>
+      <div class="pricing-price">$750–$1,200</div>
+      <div class="pricing-sub">Single project fee. No retainer. No lock-in.</div>
+      <ul class="pricing-features">
+        <li>Model observability report (PDF)</li>
+        <li>Performance decay timeline</li>
+        <li>Cost-aware alert threshold recommendations</li>
+        <li>Prioritised remediation list</li>
+        <li>Executive summary (1 page, non-technical)</li>
+        <li>30-min results walkthrough call</li>
+      </ul>
+      <button class="btn-primary" style="font-size:12.5px;padding:9px 16px" onclick="openModal()">Get a quote →</button>
+      <div class="pricing-note">Free 15-min scoping call before any commitment</div>
+    </div>
+    <div class="pricing-card featured">
+      <div class="pricing-badge">Most popular</div>
+      <div class="pricing-tier">Sentinel Monitor · Monthly</div>
+      <div class="pricing-price">$500/mo</div>
+      <div class="pricing-sub">Continuous production watch. Cancel anytime.</div>
+      <ul class="pricing-features">
+        <li>Everything in the Detect audit tier</li>
+        <li>Monthly observability report</li>
+        <li>Automated performance alert triggers</li>
+        <li>Threshold re-optimisation each cycle</li>
+        <li>Slack / email alert integration</li>
+        <li>60-min monthly governance review call</li>
+      </ul>
+      <button class="btn-primary" style="font-size:12.5px;padding:9px 16px" onclick="openModal()">Get a quote →</button>
+      <div class="pricing-note">Includes first audit. Month 2 begins after report delivery.</div>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-badge">New</div>
+      <div class="pricing-tier">Sentinel Govern · Compliance</div>
+      <div class="pricing-price">Custom</div>
+      <div class="pricing-sub">EU AI Act, DORA, or Shariah governance documentation.</div>
+      <ul class="pricing-features">
+        <li>Full Detect + Explain + Govern layers</li>
+        <li>EU AI Act Articles 9–17 documentation</li>
+        <li>Shariah compliance scoring</li>
+        <li>DORA-aligned audit trail and logging</li>
+        <li>Regulatory-ready technical records</li>
+        <li>Dedicated governance review session</li>
+      </ul>
+      <button class="btn-primary" style="font-size:12.5px;padding:9px 16px" onclick="openModal()">Get a quote →</button>
+      <div class="pricing-note">For regulated environments and Islamic finance teams.</div>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-tier">Sentinel API · Developer Access</div>
+      <div class="pricing-price">$200/mo</div>
+      <div class="pricing-sub">Programmatic model observability for engineering teams.</div>
+      <ul class="pricing-features">
+        <li>1,000 API calls/month</li>
+        <li>Observability, recall, threshold, explain endpoints</li>
+        <li>JSON + webhook alert delivery</li>
+        <li>PDF report export endpoint</li>
+        <li>CI/CD pipeline integration support</li>
+        <li>Overage: $0.18 per call</li>
+      </ul>
+      <button class="btn-primary" style="font-size:12.5px;padding:9px 16px" onclick="openModal()">Get a quote →</button>
+      <div class="pricing-note">Enterprise / custom volume: contact for quote</div>
+    </div>
+  </div>
+  <button class="quote-trigger" onclick="openModal()">◈ Need something different? Ask for a custom package →</button>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <div class="research-badge"><span style="color:var(--teal);font-size:.85rem">◈</span> Research published · IEEE/Springer/Wiley · <strong>11+ contributions</strong> · Validated system</div>
+    <h2>Do you know if your model<br>still works today?</h2>
+    <p>A 15-minute scoping call is enough to find out whether a Sentinel audit is relevant for your stack. No commitment. No pitch deck. One diagnostic question.</p>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <button class="btn-primary" style="font-size:15px;padding:13px 32px" onclick="openModal()">Get a custom quote →</button>
+      <a href="contact.html" style="font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--teal);letter-spacing:.04em">Book a scoping call ↗</a>
+      <a href="mailto:hello@strataforge3.com?subject=Strataforge%20Sentinel%20-%20Inquiry" style="font-size:11.5px;font-family:'JetBrains Mono',monospace;color:var(--muted);letter-spacing:.04em">hello@strataforge3.com</a>
+    </div>
+    <div class="guarantee">Read-only · Non-invasive · No system access required · Global deployment · Privacy-preserving</div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="fm">
+        <svg viewBox="0 0 100 100" fill="none">
+          <defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF8A3D"/><stop offset="100%" stop-color="#C2342A"/></linearGradient></defs>
+          <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#fg)"/>
+          <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#14153E"/>
+        </svg>
+        <span class="wordmark">STRATA<em>FORGE3</em> <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--orange2);letter-spacing:.06em;font-weight:400">SENTINEL</span></span>
+      </div>
+      <p class="ftag">Production AI observability. Detect. Explain. Govern.</p>
+    </div>
+    <div class="fcols">
+      <div class="fcol">
+        <h5>Site</h5>
+        <a href="index.html">Home</a>
+        <a href="audit-offer.html">Audit Offer</a>
+        <a href="process.html">Process</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="sentinel.html">Sentinel</a>
+      </div>
+      <div class="fcol">
+        <h5>Sentinel</h5>
+        <a href="#why-sentinel">Why Sentinel</a>
+        <a href="#audit-scope">Audit scope</a>
+        <a href="#api-access">API access</a>
+        <a href="#pricing">Pricing</a>
+      </div>
+      <div class="fcol">
+        <h5>Get in touch</h5>
+        <a href="contact.html">Contact</a>
+        <a href="mailto:hello@strataforge3.com">hello@strataforge3.com</a>
+      </div>
+    </div>
+  </div>
+  <div class="fbottom">
+    <span>© 2026 Strataforge3. All rights reserved.</span>
+    <span>strataforge3.com</span>
+  </div>
+</footer>
+
+<!-- Quote Modal -->
+<div class="modal-overlay" id="quoteModal" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div id="modalContent">
+      <div class="modal-head">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <h3>Get a custom quote</h3>
+        <p>Tell us about your model and stack. We respond within 24 hours with a package built around your actual needs.</p>
+      </div>
+      <div class="modal-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 1rem">
+          <div class="form-row"><label>Your name</label><input id="f-name" placeholder="Name"></div>
+          <div class="form-row"><label>Company</label><input id="f-company" placeholder="Organisation"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 1rem">
+          <div class="form-row"><label>Work email</label><input type="email" id="f-email" placeholder="you@company.com"></div>
+          <div class="form-row"><label>Your role</label>
+            <select id="f-role">
+              <option value="">Select…</option>
+              <option>Head of Risk / CRO</option><option>CTO / VP Engineering</option>
+              <option>Head of Data Science</option><option>Compliance / Audit</option>
+              <option>Fraud Analytics Lead</option><option>Chief Sharia Officer</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row"><label>What type of model are you running?</label>
+          <select id="f-model">
+            <option value="">Select…</option>
+            <option>Fraud detection (XGBoost / LightGBM)</option><option>Credit scoring</option>
+            <option>AML / transaction monitoring</option><option>Islamic finance risk model</option><option>Custom / other</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 1rem">
+          <div class="form-row"><label>Urgency</label>
+            <select id="f-urgency">
+              <option value="">Select…</option>
+              <option>ASAP — suspected silent failure</option><option>EU AI Act deadline (Aug 2026)</option>
+              <option>Within 2 weeks</option><option>Within a month</option><option>Planning ahead</option>
+            </select>
+          </div>
+          <div class="form-row"><label>Budget range</label>
+            <select id="f-budget">
+              <option value="">Select…</option>
+              <option>Under $500</option><option>$500–$1,200</option><option>$1,200–$3,000</option>
+              <option>$3,000–$8,000</option><option>Enterprise / custom</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row"><label>What do you need? (select all that apply)</label>
+          <div class="checkboxes" id="needs">
+            <label class="checkbox-item"><input type="checkbox" value="One-time observability audit"> One-time observability audit</label>
+            <label class="checkbox-item"><input type="checkbox" value="Monthly monitoring retainer"> Monthly monitoring retainer</label>
+            <label class="checkbox-item"><input type="checkbox" value="EU AI Act compliance documentation"> EU AI Act compliance documentation</label>
+            <label class="checkbox-item"><input type="checkbox" value="Shariah compliance + XAI review"> Shariah compliance + XAI review</label>
+            <label class="checkbox-item"><input type="checkbox" value="API / developer access"> API / developer access</label>
+            <label class="checkbox-item"><input type="checkbox" value="Threshold optimization only"> Threshold optimization only</label>
+            <label class="checkbox-item"><input type="checkbox" value="Custom enterprise package"> Custom enterprise package</label>
+          </div>
+        </div>
+        <div class="form-row"><label>Anything else we should know?</label>
+          <textarea id="f-details" placeholder="Model architecture, current monitoring setup, regulatory context, specific concerns…"></textarea>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <span class="modal-foot-note">Opens your email client · hello@strataforge3.com</span>
+        <button class="btn-primary" onclick="submitQuote()">Send request →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function openModal(){ document.getElementById('quoteModal').style.display='flex'; document.body.style.overflow='hidden'; }
+function closeModal(){ document.getElementById('quoteModal').style.display='none'; document.body.style.overflow=''; }
+
+function submitQuote(){
+  const name    = document.getElementById('f-name').value;
+  const company = document.getElementById('f-company').value;
+  const email   = document.getElementById('f-email').value;
+  const role    = document.getElementById('f-role').value;
+  const model   = document.getElementById('f-model').value;
+  const urgency = document.getElementById('f-urgency').value;
+  const budget  = document.getElementById('f-budget').value;
+  const details = document.getElementById('f-details').value;
+  const needs   = [...document.querySelectorAll('#needs input:checked')].map(c=>c.value);
+
+  const subject = encodeURIComponent(`Strataforge Sentinel — Quote Request from ${name} · ${company}`);
+  const body    = encodeURIComponent(
+    `Name: ${name}\nCompany: ${company}\nEmail: ${email}\nRole: ${role}\n\n` +
+    `Model type: ${model}\nUrgency: ${urgency}\nBudget range: ${budget}\n\n` +
+    `Needs:\n${needs.map(n=>`- ${n}`).join('\n')}\n\nDetails:\n${details}`
+  );
+  window.location.href = `mailto:hello@strataforge3.com?subject=${subject}&body=${body}`;
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="form-success">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div style="font-size:1.6rem;margin-bottom:.65rem;color:var(--teal)">◈</div>
+      <h4>Request sent</h4>
+      <p style="margin-top:.45rem">Your email client should have opened with your details pre-filled.<br>We respond within 24 hours.</p>
+      <button class="btn-ghost" style="margin-top:1.4rem" onclick="closeModal()">Close</button>
+    </div>`;
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+</script>
+</body>
+</html>
