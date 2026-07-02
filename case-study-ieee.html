@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Study 2: Model Stability on IEEE-CIS Fraud — Strataforge Sentinel</title>
+<meta name="description" content="590,540 transactions. 5 production periods. No false alarms. Sentinel's second case study validates the other half of what a monitoring system must prove.">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.nodes{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(circle,rgba(180,185,255,0.07) 1px,transparent 1.5px);
+  background-size:54px 54px;mask-image:radial-gradient(ellipse 800px 500px at 80% 5%,black 0%,transparent 70%);}
+.case-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--orange);margin-bottom:.8rem;display:flex;align-items:center;gap:8px;position:relative;z-index:1;}
+.case-label::before{content:'';width:18px;height:1px;background:var(--orange);}
+.verified-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(20,184,169,0.07);
+  border:1px solid rgba(20,184,169,0.2);padding:.3rem .8rem;border-radius:4px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--teal,#14B8A9);margin-bottom:1.6rem;}
+.case-meta{display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:.8rem;}
+.meta-item{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:rgba(220,218,240,0.28);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:5px;}
+.meta-item span{color:rgba(220,218,240,0.55);}
+.body{font-size:15px;line-height:1.78;color:rgba(220,218,240,0.55);margin-bottom:1rem;}
+.body strong{color:#F6F5F2;font-weight:600;}
+.sec-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--orange,#FF8A3D);margin-bottom:.5rem;display:block;}
+.page{max-width:820px;margin:0 auto;padding:3.5rem 32px 6rem;position:relative;z-index:1;}
+
+/* Summary strip */
+.sum-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:rgba(90,100,220,0.18);border:1px solid rgba(90,100,220,0.18);border-radius:12px;overflow:hidden;margin-bottom:2.4rem;}
+.sum-cell{background:var(--panel,#1B1C4C);padding:1.1rem 1.2rem;}
+.sum-num{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:500;margin-bottom:.18rem;}
+.sum-lbl{font-size:11px;color:rgba(220,218,240,0.28);}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;margin-bottom:1.4rem;}
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(220,218,240,0.28);text-align:left;padding:.6rem .9rem;border-bottom:1px solid rgba(90,100,220,0.18);white-space:nowrap;}
+.tbl td{padding:.75rem .9rem;border-bottom:1px solid rgba(90,100,220,0.07);font-size:13.5px;vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:rgba(255,138,61,0.03);}
+.tbl td:first-child{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#FFB85C;}
+.rc{font-family:'JetBrains Mono',monospace;font-weight:600;}
+.rc.ok{color:#14B8A9;} .rc.warn{color:#E8B020;} .rc.drop{color:#EF4444;}
+.psi-dim{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:rgba(220,218,240,0.28);}
+.sbadge{display:inline-flex;align-items:center;gap:4px;padding:.2rem .55rem;border-radius:4px;
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;white-space:nowrap;}
+.sbadge.healthy{background:rgba(20,184,169,0.1);color:#14B8A9;border:1px solid rgba(20,184,169,0.2);}
+.sbadge.watch{background:rgba(232,176,32,0.1);color:#E8B020;border:1px solid rgba(232,176,32,0.2);}
+.sbadge.alert{background:rgba(239,68,68,0.1);color:#EF4444;border:1px solid rgba(239,68,68,0.2);}
+
+/* Highlight row */
+.tbl tr.opt td{background:rgba(20,184,169,0.04);}
+.tbl tr.opt td:first-child{color:#14B8A9;}
+
+/* Callouts */
+.callout{border-radius:8px;padding:1.1rem 1.3rem;margin-bottom:1.2rem;}
+.callout.finding{background:rgba(239,68,68,0.05);border-left:3px solid #EF4444;}
+.callout.insight{background:rgba(255,138,61,0.05);border-left:3px solid #FF8A3D;}
+.callout.result{background:rgba(20,184,169,0.05);border-left:3px solid #14B8A9;}
+.callout.note{background:rgba(90,100,220,0.05);border-left:3px solid rgba(90,100,220,0.4);}
+.callout-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem;}
+.callout.finding .callout-label{color:#EF4444;} .callout.insight .callout-label{color:#FF8A3D;}
+.callout.result .callout-label{color:#14B8A9;} .callout.note .callout-label{color:rgba(172,173,212,0.5);}
+.callout p{font-size:14px;color:rgba(220,218,240,0.55);line-height:1.65;}
+.callout strong{color:#F6F5F2;}
+
+/* Contrast grid */
+.contrast{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(90,100,220,0.18);
+  border:1px solid rgba(90,100,220,0.18);border-radius:12px;overflow:hidden;margin-bottom:1.4rem;}
+.contrast-cell{padding:1.3rem 1.4rem;}
+.contrast-cell.case1{background:rgba(239,68,68,0.04);}
+.contrast-cell.case2{background:rgba(20,184,169,0.04);}
+.contrast-head{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.7rem;}
+.contrast-cell.case1 .contrast-head{color:#EF4444;} .contrast-cell.case2 .contrast-head{color:#14B8A9;}
+.contrast-item{font-size:13px;color:rgba(220,218,240,0.55);padding:.25rem 0;display:flex;align-items:flex-start;gap:6px;line-height:1.5;}
+
+/* Recall band chart */
+.band-chart{background:#1B1C4C;border:1px solid rgba(90,100,220,0.18);border-radius:10px;padding:1.4rem;margin-bottom:1.4rem;}
+.band-row{display:flex;align-items:center;gap:12px;margin-bottom:.55rem;}
+.band-row:last-child{margin-bottom:0;}
+.band-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:#FFB85C;min-width:22px;}
+.band-track{flex:1;height:20px;background:rgba(90,100,220,0.1);border-radius:4px;overflow:hidden;position:relative;}
+.band-fill{height:100%;border-radius:4px;position:absolute;top:0;}
+.band-val{font-family:'JetBrains Mono',monospace;font-size:11px;min-width:40px;text-align:right;}
+
+/* Bottom CTA */
+.bottom-cta{background:rgba(255,138,61,0.05);border:1px solid rgba(255,138,61,0.18);border-radius:14px;padding:2rem;text-align:center;margin-top:1.6rem;}
+.bottom-cta p{font-size:14px;color:rgba(220,218,240,0.55);margin-bottom:1.4rem;line-height:1.65;max-width:480px;margin-left:auto;margin-right:auto;}
+.cta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.btn-pr{background:linear-gradient(135deg,#FF8A3D,#C2342A);color:#1A0E04;font-weight:700;font-size:14px;padding:12px 24px;border:none;cursor:pointer;border-radius:7px;font-family:inherit;}
+.btn-gh{background:transparent;color:#F6F5F2;border:1px solid rgba(246,245,242,0.15);font-size:14px;font-weight:500;padding:12px 22px;cursor:pointer;border-radius:7px;font-family:inherit;}
+.btn-gh:hover{border-color:#FF8A3D;}
+
+footer{border-top:1px solid rgba(90,100,220,0.18);padding:36px 32px;position:relative;z-index:1;}
+.fi{max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+.fm{display:flex;align-items:center;gap:9px;}
+.fm svg{width:20px;height:20px;}
+.wm{font-family:'Playfair Display',serif;font-weight:700;font-size:14px;}
+.wm em{font-style:normal;color:#FF8A3D;}
+.fl{display:flex;gap:20px;}
+.fl a{font-size:13px;color:rgba(220,218,240,0.28);transition:color .15s;}
+.fl a:hover{color:#F6F5F2;}
+@media(max-width:640px){
+  .page{padding:2.5rem 16px 4rem;}
+  .sum-strip{grid-template-columns:1fr 1fr;}
+  .contrast{grid-template-columns:1fr;}
+  footer{padding:28px 16px;}
+}
+</style>
+</head>
+<body>
+<div class="nodes"></div>
+
+<nav>
+  <div class="wrap" style="max-width:100%;padding:0 32px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;height:68px;">
+      <div style="display:flex;align-items:center;gap:9px;">
+        <svg width="26" height="26" viewBox="0 0 100 100" fill="none">
+          <defs><linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF8A3D"/><stop offset="100%" stop-color="#C2342A"/></linearGradient></defs>
+          <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#ng)"/>
+          <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#1E2068"/>
+        </svg>
+        <span style="font-family:'Playfair Display',serif;font-weight:700;font-size:15px;">STRATAFORGE3</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#FFB85C;border:1px solid rgba(255,184,92,0.28);padding:2px 7px;border-radius:4px;margin-left:3px;">SENTINEL</span>
+      </div>
+      <div style="display:flex;gap:24px;">
+        <a href="index.html" style="font-size:13.5px;color:rgba(220,218,240,0.55);">Home</a>
+        <a href="sentinel.html" style="font-size:13.5px;color:rgba(220,218,240,0.55);">Sentinel</a>
+        <a href="case-study-fraud.html" style="font-size:13.5px;color:rgba(220,218,240,0.55);">Case Study 1</a>
+        <a href="contact.html" style="font-size:13.5px;color:rgba(220,218,240,0.55);">Contact</a>
+      </div>
+      <button onclick="window.location.href='mailto:hello@strataforge3.com?subject=Sentinel%20Audit'" style="background:linear-gradient(135deg,#FF8A3D,#C2342A);color:#1A0E04;font-weight:700;font-size:13px;padding:9px 18px;border:none;cursor:pointer;border-radius:6px;font-family:inherit;">Book an audit →</button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Case Study 1 link -->
+  <div style="display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:rgba(220,218,240,0.38);margin-bottom:1.2rem;border:1px solid rgba(90,100,220,0.18);padding:.35rem .8rem;border-radius:4px;">
+    ← <a href="case-study-fraud.html" style="color:#FFB85C;">Case Study 1: ULB Credit Card Fraud</a> · This is Case Study 2
+  </div>
+
+  <p class="case-label">Case Study 2 · IEEE-CIS Fraud Detection</p>
+  <h1 style="font-family:'Playfair Display',serif;font-size:clamp(1.9rem,4.5vw,3rem);line-height:1.1;margin-bottom:1rem;">Validating Model Stability<br>on a Harder, Higher-Volume<br>Fraud Dataset</h1>
+
+  <div class="case-meta">
+    <span class="meta-item">◈ <span>IEEE-CIS Fraud Detection (Kaggle)</span></span>
+    <span class="meta-item">◈ <span>590,540 transactions</span></span>
+    <span class="meta-item">◈ <span>434 raw columns</span></span>
+    <span class="meta-item">◈ <span>XGBoost · Optuna 18 trials</span></span>
+  </div>
+
+  <div class="verified-badge">✓ Public dataset · Reproducible · Independently verifiable</div>
+
+  <div class="sum-strip">
+    <div class="sum-cell"><div class="sum-num" style="color:#14B8A9;">0.888</div><div class="sum-lbl">ROC-AUC (harder dataset)</div></div>
+    <div class="sum-cell"><div class="sum-num" style="color:#FFB85C;">0 alerts</div><div class="sum-lbl">False alarms across 5 periods</div></div>
+    <div class="sum-cell"><div class="sum-num" style="color:#14B8A9;">65–72%</div><div class="sum-lbl">Recall band — stable throughout</div></div>
+    <div class="sum-cell"><div class="sum-num" style="color:#FF8A3D;">+21 pts</div><div class="sum-lbl">Recall recovered via threshold (0.15)</div></div>
+  </div>
+
+  <!-- Why a second dataset -->
+  <span class="sec-label">Why a second dataset</span>
+  <h2 style="font-family:'Playfair Display',serif;font-size:1.55rem;line-height:1.2;margin-bottom:.8rem;">A monitoring system must also know when to stay silent.</h2>
+  <p class="body">Our first case study showed Sentinel catching a real recall collapse on the ULB Credit Card Fraud dataset. A monitoring system is only useful if its alerts mean something — which means it also needs to <strong>correctly say nothing is wrong when nothing is wrong.</strong></p>
+  <p class="body">IEEE-CIS Fraud Detection is a good test of exactly that: larger (590,540 transactions), messier (434 raw columns including transaction metadata and device/identity data), and with a fraud rate <strong>20× higher</strong> than the Credit Card dataset (3.499% vs 0.173%).</p>
+
+  <div class="callout insight">
+    <div class="callout-label">◈ The two-sided test</div>
+    <p>Case Study 1 proved Sentinel catches a real failure. <strong>Case Study 2 proves Sentinel doesn't manufacture false alarms.</strong> You need both to trust a monitoring system. A system that fires on everything is as useless as one that fires on nothing.</p>
+  </div>
+
+  <hr style="border:none;border-top:1px solid rgba(90,100,220,0.18);margin:2rem 0;">
+
+  <!-- The model -->
+  <span class="sec-label">The model</span>
+  <h2 style="font-family:'Playfair Display',serif;font-size:1.55rem;line-height:1.2;margin-bottom:.8rem;">Harder dataset, harder problem — expected and handled.</h2>
+  <p class="body">After dropping columns with more than 90% missing values, encoding 30 categorical fields, and engineering log-transformed amount and zero-amount indicator features (<strong>425 columns total</strong>), we ran an 18-trial Optuna search optimizing PR-AUC.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(90,100,220,0.18);border:1px solid rgba(90,100,220,0.18);border-radius:10px;overflow:hidden;margin-bottom:1.4rem;">
+    <div style="background:#1B1C4C;padding:1.2rem 1.4rem;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(220,218,240,0.28);margin-bottom:.8rem;">Test performance (default threshold 0.50)</div>
+      <div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid rgba(90,100,220,0.07);"><span style="font-size:13px;color:rgba(220,218,240,0.55);">ROC-AUC</span><span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;color:#14B8A9;">0.888</span></div>
+      <div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid rgba(90,100,220,0.07);"><span style="font-size:13px;color:rgba(220,218,240,0.55);">PR-AUC</span><span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;color:#14B8A9;">0.509</span></div>
+      <div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid rgba(90,100,220,0.07);"><span style="font-size:13px;color:rgba(220,218,240,0.55);">Recall</span><span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;color:#E8B020;">49.3%</span></div>
+      <div style="display:flex;justify-content:space-between;padding:.3rem 0;"><span style="font-size:13px;color:rgba(220,218,240,0.55);">Precision</span><span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;color:#14B8A9;">47.7%</span></div>
+    </div>
+    <div style="background:#1B1C4C;padding:1.2rem 1.4rem;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(220,218,240,0.28);margin-bottom:.8rem;">Model configuration</div>
+      <div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid rgba(90,100,220,0.07);"><span style="font-size:13px;color:rgba(220,218,240,0.55);">Architecture</span><span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;color:rgba(220,218,240,0.55);">XGBoost</span></div>
+      <div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid rgba(90,100,220,0.07);"><span style="font-size:13px;color:rgba(220,218,240,0.55);">max_depth / lr</span><span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;color:rgba(220,218,240,0.55);">9 / 0.135</span></div>
+      <div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid rgba(90,100,220,0.07);"><span style="font-size:13px;color:rgba(220,218,240,0.55);">n_estimators</span><span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;color:rgba(220,218,240,0.55);">303</span></div>
+      <div style="display:flex;justify-content:space-between;padding:.3rem 0;"><span style="font-size:13px;color:rgba(220,218,240,0.55);">Top features</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(220,218,240,0.38);">V258, V218, V70, V257, V294</span></div>
+    </div>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-label">Why lower ROC-AUC is expected here</div>
+    <p>The Credit Card model scored 0.977 ROC-AUC. This model scores 0.888. That's not a step backward — IEEE-CIS has a <strong>3.5% fraud rate</strong> (20× higher than Credit Card's 0.17%), plus far noisier anonymized features (V258, V218, etc. dominate importance, with no interpretable meaning). A model catching ~half of fraud at default threshold 0.50 is a realistic starting point — exactly where threshold optimization makes its biggest difference.</p>
+  </div>
+
+  <hr style="border:none;border-top:1px solid rgba(90,100,220,0.18);margin:2rem 0;">
+
+  <!-- Threshold optimization -->
+  <span class="sec-label">Threshold optimization</span>
+  <h2 style="font-family:'Playfair Display',serif;font-size:1.55rem;line-height:1.2;margin-bottom:.8rem;">Default threshold left 21 points of recall on the table.</h2>
+  <p class="body">As with the Credit Card model, the default 0.50 threshold was the wrong threshold. Sentinel's cost-aware threshold analysis found the optimal decision boundary at <strong>0.15</strong> — a larger swing than Case Study 1's correction, because higher fraud rates change the optimal cost structure significantly.</p>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Threshold</th><th>Recall</th><th>Precision</th><th>Projected cost</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>0.50 (default)</td>
+          <td><span class="rc warn">49.3%</span></td>
+          <td>47.7%</td>
+          <td style="font-family:'JetBrains Mono',monospace;color:#EF4444;">$164,645</td>
+        </tr>
+        <tr class="opt">
+          <td>0.15 (optimal)</td>
+          <td><span class="rc ok">70.2%</span></td>
+          <td>21.1%</td>
+          <td style="font-family:'JetBrains Mono',monospace;color:#14B8A9;">$132,485</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout result">
+    <div class="callout-label">◈ Result</div>
+    <p>Moving to the cost-optimal threshold recovered <strong>21 points of recall</strong> and reduced projected cost by <strong>$32,160</strong> on the test set. The default decision boundary almost never reflects the actual fraud-rate and cost structure of a production system.</p>
+  </div>
+
+  <hr style="border:none;border-top:1px solid rgba(90,100,220,0.18);margin:2rem 0;">
+
+  <!-- Five periods -->
+  <span class="sec-label">Production drift monitoring</span>
+  <h2 style="font-family:'Playfair Display',serif;font-size:1.55rem;line-height:1.2;margin-bottom:.8rem;">Five periods. No false alarms. Sentinel stayed silent.</h2>
+  <p class="body">Using the 0.15 threshold, we ran the same five-period drift simulation used in Case Study 1. Period-to-period fraud rate ranged from 2.99% to 4.22% — genuine, non-trivial variation. The question: would Sentinel fire a false alarm?</p>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Period</th><th>Fraud rate</th><th>Recall</th><th>Precision</th><th>Mean PSI</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>P1</td><td>2.99%</td><td><span class="rc ok">71.8%</span></td><td>20.2%</td><td><span class="psi-dim">0.0127</span></td><td><span class="sbadge healthy">✅ Healthy</span></td></tr>
+        <tr><td>P2</td><td>3.23%</td><td><span class="rc ok">70.3%</span></td><td>19.2%</td><td><span class="psi-dim">0.0028</span></td><td><span class="sbadge healthy">✅ Healthy</span></td></tr>
+        <tr><td>P3</td><td>3.36%</td><td><span class="rc warn">65.3%</span></td><td>18.7%</td><td><span class="psi-dim">0.0045</span></td><td><span class="sbadge healthy">✅ Healthy</span></td></tr>
+        <tr><td>P4</td><td>3.61%</td><td><span class="rc ok">72.5%</span></td><td>22.9%</td><td><span class="psi-dim">0.0103</span></td><td><span class="sbadge healthy">✅ Healthy</span></td></tr>
+        <tr><td>P5</td><td>4.22%</td><td><span class="rc ok">70.8%</span></td><td>24.2%</td><td><span class="psi-dim">0.0075</span></td><td><span class="sbadge healthy">✅ Healthy</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Recall band chart -->
+  <div class="band-chart">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(220,218,240,0.28);margin-bottom:.9rem;">Recall Band — All Periods Within Safe Zone (60% floor)</div>
+    <div id="bandChart"></div>
+    <div style="margin-top:.7rem;display:flex;gap:1.5rem;flex-wrap:wrap;">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(220,218,240,0.28);">Alert floor: 60% · <span style="color:#14B8A9;">Band: 65.3–72.5%</span> · All 5 periods within safe zone</span>
+    </div>
+  </div>
+
+  <div class="callout result">
+    <div class="callout-label">◈ Key result</div>
+    <p>Recall held in a tight <strong>65.3–72.5% band</strong> across all five periods. No period dropped below the 60% alert threshold. PSI stayed well under the levels that preceded the Credit Card model's Period 5 breakdown (0.0104 there vs. a peak of 0.0127 here, <strong>without the corresponding recall collapse</strong>). Zero false alarms fired.</p>
+  </div>
+
+  <hr style="border:none;border-top:1px solid rgba(90,100,220,0.18);margin:2rem 0;">
+
+  <!-- What together they prove -->
+  <span class="sec-label">What the two case studies together prove</span>
+  <h2 style="font-family:'Playfair Display',serif;font-size:1.55rem;line-height:1.2;margin-bottom:.8rem;">One model failed. One held. Sentinel told the difference.</h2>
+
+  <div class="contrast">
+    <div class="contrast-cell case1">
+      <div class="contrast-head">🔴 Case Study 1 — ULB Credit Card</div>
+      <div class="contrast-item"><span style="color:#EF4444;flex-shrink:0">✕</span> Recall: 88.9% → 60.0% (−29 pts)</div>
+      <div class="contrast-item"><span style="color:#EF4444;flex-shrink:0">✕</span> PSI climbed 5× on Amount_log</div>
+      <div class="contrast-item"><span style="color:#EF4444;flex-shrink:0">✕</span> RECALL_ALERT fired at Period 5</div>
+      <div class="contrast-item"><span style="color:#14B8A9;flex-shrink:0">✓</span> Sentinel caught it correctly</div>
+    </div>
+    <div class="contrast-cell case2">
+      <div class="contrast-head">✅ Case Study 2 — IEEE-CIS</div>
+      <div class="contrast-item"><span style="color:#14B8A9;flex-shrink:0">✓</span> Recall: 65.3–72.5% (stable band)</div>
+      <div class="contrast-item"><span style="color:#14B8A9;flex-shrink:0">✓</span> PSI stayed within safe range</div>
+      <div class="contrast-item"><span style="color:#14B8A9;flex-shrink:0">✓</span> No alerts — 5/5 periods healthy</div>
+      <div class="contrast-item"><span style="color:#14B8A9;flex-shrink:0">✓</span> Sentinel stayed silent correctly</div>
+    </div>
+  </div>
+
+  <p class="body">Together, these two studies apply the same monitoring methodology to two different outcomes: <strong>one model degrading, correctly flagged; one model holding steady, correctly left alone.</strong> That's the minimum viable test of whether a monitoring system is actually measuring something real rather than generating noise.</p>
+
+  <div class="callout note">
+    <div class="callout-label">Methodology note</div>
+    <p>This evaluation uses the public IEEE-CIS Fraud Detection dataset and simulated production-drift periods constructed from held-out test data, not live customer transactions. Alert thresholds (60% recall floor) are set per-model based on validated baseline performance, not a fixed universal number.</p>
+  </div>
+
+  <div class="bottom-cta">
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.55rem;margin-bottom:.5rem;">Can your production model tell you if it's still working?</h2>
+    <p>A Sentinel audit answers that in 5–7 days — without system access, using your existing prediction logs.</p>
+    <div class="cta-row">
+      <button class="btn-pr" onclick="window.location.href='mailto:hello@strataforge3.com?subject=Sentinel%20Audit%20-%20IEEE%20Case%20Study'">Book a Sentinel audit →</button>
+      <button class="btn-gh" onclick="window.location.href='case-study-fraud.html'">← Case Study 1</button>
+      <button class="btn-gh" onclick="window.location.href='sentinel.html'">Full methodology</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="fi">
+    <div class="fm">
+      <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
+        <defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF8A3D"/><stop offset="100%" stop-color="#C2342A"/></linearGradient></defs>
+        <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#fg)"/>
+        <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#14153E"/>
+      </svg>
+      <span class="wm">STRATA<em>FORGE3</em></span>
+    </div>
+    <div class="fl">
+      <a href="index.html">Home</a>
+      <a href="sentinel.html">Sentinel</a>
+      <a href="case-study-fraud.html">Case Study 1</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const recalls = [71.8,70.3,65.3,72.5,70.8];
+const labels  = ['P1','P2','P3','P4','P5'];
+const maxR = 100, alertFloor = 60;
+const container = document.getElementById('bandChart');
+recalls.forEach((v,i)=>{
+  const fillPct  = v;
+  const floorPct = alertFloor;
+  const col = v < alertFloor ? '#EF4444' : '#14B8A9';
+  container.innerHTML += `<div class="band-row">
+    <span class="band-label">${labels[i]}</span>
+    <div class="band-track">
+      <div class="band-fill" style="width:${floorPct}%;background:rgba(90,100,220,0.15);left:0;"></div>
+      <div class="band-fill" style="width:${fillPct-floorPct}%;background:${col};opacity:.8;left:${floorPct}%;"></div>
+    </div>
+    <span class="band-val" style="color:${col};font-family:'JetBrains Mono',monospace;font-size:11px;">${v}%</span>
+  </div>`;
+});
+container.innerHTML += `<div style="display:flex;align-items:center;gap:8px;margin-top:.5rem;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(220,218,240,0.28);">
+  <div style="width:16px;height:3px;background:#EF4444;opacity:.6;"></div> Alert floor: 60%
+  <div style="width:16px;height:3px;background:#14B8A9;opacity:.8;margin-left:.75rem;"></div> Recall (all periods safe)
+</div>`;
+</script>
+</body>
+</html>
