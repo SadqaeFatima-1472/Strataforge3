@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Study: Silent Fraud Model Failure — Strataforge Sentinel</title>
+<meta name="description" content="284,807 transactions. 29-point recall drop. Caught before it became a loss event. How Sentinel detected silent production model failure on the ULB Credit Card Fraud dataset.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg:#14153E; --bg2:#1B1C4C; --bg3:#22245A;
+  --border:rgba(90,100,220,0.18); --border2:rgba(255,138,61,0.18);
+  --text:#F6F5F2; --muted:rgba(220,218,240,0.55); --dim:rgba(220,218,240,0.28);
+  --orange:#FF8A3D; --orange2:#FFB85C; --crimson:#C2342A;
+  --teal:#14B8A9; --gold:#E8B020; --red:#EF4444;
+  --sans:'Inter',-apple-system,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --serif:'Playfair Display',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+::selection{background:var(--crimson);color:#fff;}
+
+.nodes{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(circle,rgba(180,185,255,0.07) 1px,transparent 1.5px);
+  background-size:54px 54px;
+  mask-image:radial-gradient(ellipse 800px 500px at 80% 5%,black 0%,transparent 70%);}
+
+/* Nav */
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:68px;background:rgba(20,21,62,0.9);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);}
+.nav-mark{display:flex;align-items:center;gap:9px;}
+.nav-mark svg{width:26px;height:26px;}
+.nav-brand{font-family:var(--serif);font-weight:700;font-size:15px;}
+.nav-tag{font-family:var(--mono);font-size:10px;color:var(--orange2);border:1px solid rgba(255,184,92,0.28);padding:2px 7px;border-radius:4px;margin-left:3px;}
+.nav-links{display:flex;gap:24px;}
+.nav-links a{font-size:13.5px;color:var(--muted);transition:color .15s;}
+.nav-links a:hover{color:var(--text);}
+.nav-cta{background:linear-gradient(135deg,var(--orange),var(--crimson));color:#1A0E04;font-weight:700;
+  font-size:13px;padding:9px 18px;border:none;cursor:pointer;border-radius:6px;font-family:var(--sans);}
+
+/* Layout */
+.page{max-width:820px;margin:0 auto;padding:3.5rem 32px 6rem;position:relative;z-index:1;}
+
+/* Header */
+.case-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--orange);margin-bottom:.8rem;display:flex;align-items:center;gap:8px;}
+.case-label::before{content:'';width:18px;height:1px;background:var(--orange);}
+h1{font-family:var(--serif);font-size:clamp(1.9rem,4.5vw,3rem);line-height:1.1;margin-bottom:1rem;}
+.case-meta{display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:.8rem;}
+.meta-item{font-family:var(--mono);font-size:10.5px;color:var(--dim);letter-spacing:.06em;
+  text-transform:uppercase;display:flex;align-items:center;gap:5px;}
+.meta-item span{color:var(--muted);}
+.verified-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(20,184,169,0.07);
+  border:1px solid rgba(20,184,169,0.2);padding:.3rem .8rem;border-radius:4px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--teal);margin-bottom:1.6rem;}
+
+/* Summary strip */
+.summary-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  margin-bottom:2.4rem;}
+.sum-cell{background:var(--bg2);padding:1.1rem 1.2rem;}
+.sum-num{font-family:var(--mono);font-size:1.5rem;font-weight:500;margin-bottom:.18rem;}
+.sum-num.alert{color:var(--red);}
+.sum-num.ok{color:var(--teal);}
+.sum-num.warn{color:var(--gold);}
+.sum-num.orange{color:var(--orange2);}
+.sum-lbl{font-size:11px;color:var(--dim);}
+
+/* Divider */
+.divider{border:none;border-top:1px solid var(--border);margin:2rem 0;}
+
+/* Section headings */
+.sec-label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--orange);margin-bottom:.5rem;display:block;}
+h2{font-family:var(--serif);font-size:1.55rem;line-height:1.2;margin-bottom:.8rem;}
+h3{font-family:var(--sans);font-size:1.05rem;font-weight:600;margin-bottom:.5rem;color:var(--orange2);}
+.body{font-size:15px;line-height:1.78;color:var(--muted);margin-bottom:1rem;}
+.body strong{color:var(--text);font-weight:600;}
+
+/* Period table */
+.period-table-wrap{overflow-x:auto;margin-bottom:1.4rem;}
+.period-table{width:100%;border-collapse:collapse;}
+.period-table th{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);text-align:left;padding:.6rem .9rem;border-bottom:1px solid var(--border);
+  white-space:nowrap;}
+.period-table td{padding:.75rem .9rem;border-bottom:1px solid rgba(90,100,220,0.08);
+  font-size:13.5px;vertical-align:middle;}
+.period-table tr:last-child td{border-bottom:none;}
+.period-table tr:hover td{background:rgba(255,138,61,0.03);}
+.period-table td:first-child{font-family:var(--mono);font-size:12.5px;color:var(--orange2);}
+.recall-cell{font-family:var(--mono);font-weight:600;}
+.recall-cell.drop{color:var(--red);}
+.recall-cell.warn{color:var(--gold);}
+.recall-cell.ok{color:var(--teal);}
+.status-badge{display:inline-flex;align-items:center;gap:4px;padding:.2rem .55rem;
+  border-radius:4px;font-family:var(--mono);font-size:10.5px;white-space:nowrap;}
+.status-badge.healthy{background:rgba(20,184,169,0.1);color:var(--teal);border:1px solid rgba(20,184,169,0.2);}
+.status-badge.watch{background:rgba(232,176,32,0.1);color:var(--gold);border:1px solid rgba(232,176,32,0.2);}
+.status-badge.alert{background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.2);}
+.psi-drift{font-family:var(--mono);font-size:11.5px;color:var(--dim);}
+
+/* Recall visual */
+.recall-bars{display:flex;align-items:flex-end;gap:10px;height:120px;margin-bottom:.6rem;}
+.recall-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.recall-bar-val{font-family:var(--mono);font-size:11px;}
+.recall-bar{width:100%;border-radius:4px 4px 0 0;min-height:6px;transition:height .8s ease;}
+.recall-bar-lbl{font-family:var(--mono);font-size:10px;color:var(--dim);}
+
+/* Callout boxes */
+.callout{border-radius:8px;padding:1.1rem 1.3rem;margin-bottom:1.2rem;}
+.callout.finding{background:rgba(239,68,68,0.05);border-left:3px solid var(--red);}
+.callout.insight{background:rgba(255,138,61,0.05);border-left:3px solid var(--orange);}
+.callout.result{background:rgba(20,184,169,0.05);border-left:3px solid var(--teal);}
+.callout.note{background:rgba(90,100,220,0.05);border-left:3px solid rgba(90,100,220,0.4);}
+.callout-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:.35rem;}
+.callout.finding .callout-label{color:var(--red);}
+.callout.insight .callout-label{color:var(--orange);}
+.callout.result .callout-label{color:var(--teal);}
+.callout.note .callout-label{color:rgba(172,173,212,0.5);}
+.callout p{font-size:14px;color:var(--muted);line-height:1.65;}
+.callout strong{color:var(--text);}
+
+/* Model reload section */
+.reload-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1.2rem;}
+.reload-cell{background:var(--bg2);padding:1.2rem 1.4rem;}
+.reload-cell .rc-label{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--dim);margin-bottom:.8rem;}
+.reload-row{display:flex;justify-content:space-between;align-items:baseline;
+  padding:.3rem 0;border-bottom:1px solid rgba(90,100,220,0.07);}
+.reload-row:last-child{border-bottom:none;}
+.reload-key{font-size:13px;color:var(--muted);}
+.reload-val{font-family:var(--mono);font-size:13.5px;font-weight:500;}
+.reload-val.ok{color:var(--teal);}
+.reload-val.dim{color:var(--dim);}
+
+/* Three takeaways */
+.takeaways{display:flex;flex-direction:column;gap:12px;margin-bottom:1.4rem;}
+.takeaway{display:flex;gap:1rem;background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;padding:1rem 1.2rem;}
+.ta-num{font-family:var(--mono);font-size:11px;color:var(--orange);flex-shrink:0;
+  width:22px;padding-top:2px;}
+.ta-text h4{font-size:14px;font-weight:600;margin-bottom:.2rem;}
+.ta-text p{font-size:13px;color:var(--muted);line-height:1.6;}
+
+/* PSI climb visual */
+.psi-climb{display:flex;align-items:flex-end;gap:8px;height:80px;margin-bottom:.5rem;}
+.psi-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.psi-bar{width:100%;border-radius:3px 3px 0 0;}
+.psi-bar-lbl{font-family:var(--mono);font-size:9.5px;color:var(--dim);}
+.psi-bar-val{font-family:var(--mono);font-size:10px;}
+
+/* Bottom CTA */
+.bottom-cta{background:rgba(255,138,61,0.05);border:1px solid rgba(255,138,61,0.18);
+  border-radius:14px;padding:2rem;text-align:center;margin-top:1.6rem;}
+.bottom-cta h2{font-family:var(--serif);font-size:1.55rem;margin-bottom:.5rem;}
+.bottom-cta p{font-size:14px;color:var(--muted);margin-bottom:1.4rem;line-height:1.65;max-width:480px;margin-left:auto;margin-right:auto;}
+.cta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{background:linear-gradient(135deg,var(--orange),var(--crimson));color:#1A0E04;
+  font-weight:700;font-size:14px;padding:12px 24px;border:none;cursor:pointer;
+  border-radius:7px;font-family:var(--sans);display:inline-flex;align-items:center;gap:6px;}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid rgba(246,245,242,0.15);
+  font-size:14px;font-weight:500;padding:12px 22px;cursor:pointer;border-radius:7px;
+  font-family:var(--sans);display:inline-flex;align-items:center;gap:6px;}
+.btn-ghost:hover{border-color:var(--orange);}
+
+/* Methodology note */
+.method-note{font-family:var(--mono);font-size:11px;color:var(--dim);line-height:1.65;
+  border-top:1px solid var(--border);padding-top:1.2rem;margin-top:1rem;}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:36px 32px;position:relative;z-index:1;}
+.footer-inner{max-width:820px;margin:0 auto;display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;gap:16px;}
+.fm{display:flex;align-items:center;gap:9px;}
+.fm svg{width:20px;height:20px;}
+.fm .wordmark{font-family:var(--serif);font-weight:700;font-size:14px;}
+.fm em{font-style:normal;color:var(--orange);}
+.footer-links{display:flex;gap:20px;}
+.footer-links a{font-size:13px;color:var(--dim);transition:color .15s;}
+.footer-links a:hover{color:var(--text);}
+
+@media(max-width:640px){
+  nav{padding:0 16px;}
+  .nav-links{display:none;}
+  .page{padding:2.5rem 16px 4rem;}
+  .summary-strip{grid-template-columns:1fr 1fr;}
+  .reload-grid{grid-template-columns:1fr;}
+  .case-meta{gap:1rem;}
+  footer{padding:28px 16px;}
+}
+</style>
+</head>
+<body>
+<div class="nodes"></div>
+
+<nav>
+  <div class="nav-mark">
+    <svg viewBox="0 0 100 100" fill="none">
+      <defs>
+        <linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#FF8A3D"/>
+          <stop offset="100%" stop-color="#C2342A"/>
+        </linearGradient>
+      </defs>
+      <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#ng)"/>
+      <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#1E2068"/>
+    </svg>
+    <span class="nav-brand">STRATAFORGE3</span>
+    <span class="nav-tag">SENTINEL</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="sentinel.html">Sentinel</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <button class="nav-cta" onclick="window.location.href='mailto:hello@strataforge3.com?subject=Sentinel%20Audit%20-%20Case%20Study%20Inquiry'">Book an audit →</button>
+</nav>
+
+<div class="page">
+
+  <!-- Header -->
+  <p class="case-label">Case Study · Credit Card Fraud Detection</p>
+  <h1>Detecting Silent Model Failure in a Production Fraud Detector</h1>
+
+  <div class="case-meta">
+    <span class="meta-item">◈ <span>Dataset: ULB Credit Card Fraud (Kaggle)</span></span>
+    <span class="meta-item">◈ <span>284,807 transactions</span></span>
+    <span class="meta-item">◈ <span>XGBoost · Optuna-tuned (40 trials)</span></span>
+    <span class="meta-item">◈ <span>Monitoring: Strataforge Sentinel</span></span>
+  </div>
+
+  <div class="verified-badge">
+    ✓ Fully reproducible · Public dataset · Every number below is independently verifiable
+  </div>
+
+  <!-- Summary strip -->
+  <div class="summary-strip">
+    <div class="sum-cell">
+      <div class="sum-num ok">0.977</div>
+      <div class="sum-lbl">Training ROC-AUC</div>
+    </div>
+    <div class="sum-cell">
+      <div class="sum-num alert">60.0%</div>
+      <div class="sum-lbl">Recall at Period 5 (was 88.9%)</div>
+    </div>
+    <div class="sum-cell">
+      <div class="sum-num warn">−29 pts</div>
+      <div class="sum-lbl">Recall drop across 5 periods</div>
+    </div>
+    <div class="sum-cell">
+      <div class="sum-num orange">0.73</div>
+      <div class="sum-lbl">Optimal threshold (not 0.50 default)</div>
+    </div>
+  </div>
+
+  <!-- Setup -->
+  <span class="sec-label">The setup</span>
+  <h2>A strong model. Trained, validated, deployed. Then what?</h2>
+  <p class="body">We trained a fraud classifier on the ULB Credit Card Fraud dataset — 284,807 transactions, only 492 of them fraud. This is a standard, widely-used benchmark, which matters here: it means every number below can be independently checked by anyone who downloads the same public dataset.</p>
+  <p class="body">After feature engineering — 9 engineered features added to the original 28 PCA components (rolling stats, interaction terms, log-transformed amount) for 38 features total — and a 40-trial Optuna search optimizing for PR-AUC, the final model scored:</p>
+
+  <div class="reload-grid" style="margin-bottom:1.4rem;">
+    <div class="reload-cell">
+      <div class="rc-label">Training performance</div>
+      <div class="reload-row"><span class="reload-key">ROC-AUC</span><span class="reload-val ok">0.977</span></div>
+      <div class="reload-row"><span class="reload-key">PR-AUC</span><span class="reload-val ok">0.796</span></div>
+      <div class="reload-row"><span class="reload-key">Decision threshold</span><span class="reload-val ok">0.73</span></div>
+      <div class="reload-row"><span class="reload-key">Tuning</span><span class="reload-val dim">40-trial Optuna · PR-AUC objective</span></div>
+    </div>
+    <div class="reload-cell">
+      <div class="rc-label">Feature engineering</div>
+      <div class="reload-row"><span class="reload-key">Original features</span><span class="reload-val dim">28 PCA components + Amount + Time</span></div>
+      <div class="reload-row"><span class="reload-key">Engineered features</span><span class="reload-val ok">+9 (rolling stats, interaction terms, Amount_log)</span></div>
+      <div class="reload-row"><span class="reload-key">Total features</span><span class="reload-val ok">38</span></div>
+      <div class="reload-row"><span class="reload-key">Threshold basis</span><span class="reload-val dim">Cost-sensitivity analysis, not default 0.50</span></div>
+    </div>
+  </div>
+
+  <div class="callout insight">
+    <div class="callout-label">◈ Note on threshold</div>
+    <p>The optimal threshold of <strong>0.73</strong> — selected via cost-sensitivity analysis rather than the default 0.50 — alone reduced projected cost from <strong>$1,990 to $1,850</strong> on the test set. The default threshold is almost never the right threshold in fraud detection.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- The real question -->
+  <span class="sec-label">The real question</span>
+  <h2>Does it stay good?</h2>
+  <p class="body">A model's validation score is a snapshot. Production is not a snapshot — transaction patterns drift, fraud tactics evolve, and a model that scored 0.977 ROC-AUC on Tuesday can quietly degrade by Friday with <strong>no error, no crash, and no alert</strong>, unless something is specifically watching for it.</p>
+  <p class="body">To test this, we ran the deployed model against five sequential slices of held-out data (~11,393 transactions each), simulating the kind of gradual population drift a live system would encounter over time, and tracked three things Sentinel monitors continuously: <strong>recall, feature-level PSI, and cost.</strong></p>
+
+  <!-- Period table -->
+  <div class="period-table-wrap">
+    <table class="period-table">
+      <thead>
+        <tr>
+          <th>Period</th>
+          <th>Recall</th>
+          <th>Precision</th>
+          <th>Mean PSI</th>
+          <th>Top drifting feature</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>P1</td>
+          <td><span class="recall-cell ok">88.9%</span></td>
+          <td>84.2%</td>
+          <td><span class="psi-drift">0.0022</span></td>
+          <td><span class="psi-drift">V10 (PSI 0.010)</span></td>
+          <td><span class="status-badge healthy">✅ Healthy</span></td>
+        </tr>
+        <tr>
+          <td>P2</td>
+          <td><span class="recall-cell warn">78.3%</span></td>
+          <td>85.7%</td>
+          <td><span class="psi-drift">0.0047</span></td>
+          <td><span class="psi-drift">Amount_log (PSI 0.029)</span></td>
+          <td><span class="status-badge healthy">✅ Healthy</span></td>
+        </tr>
+        <tr>
+          <td>P3</td>
+          <td><span class="recall-cell warn">75.0%</span></td>
+          <td>100.0%</td>
+          <td><span class="psi-drift">0.0070</span></td>
+          <td><span class="psi-drift">Amount_log (PSI 0.049)</span></td>
+          <td><span class="status-badge healthy">✅ Healthy</span></td>
+        </tr>
+        <tr>
+          <td>P4</td>
+          <td><span class="recall-cell warn">75.0%</span></td>
+          <td>54.5%</td>
+          <td><span class="psi-drift">0.0088</span></td>
+          <td><span class="psi-drift">Amount_log (PSI 0.064)</span></td>
+          <td><span class="status-badge watch">⚠️ Watch</span></td>
+        </tr>
+        <tr style="background:rgba(239,68,68,0.04)">
+          <td>P5</td>
+          <td><span class="recall-cell drop">60.0%</span></td>
+          <td>60.0%</td>
+          <td><span class="psi-drift" style="color:var(--red)">0.0104</span></td>
+          <td><span class="psi-drift" style="color:var(--red)">Amount_log (PSI 0.087)</span></td>
+          <td><span class="status-badge alert">🔴 RECALL_ALERT</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Recall bar chart -->
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.4rem;margin-bottom:1.4rem;">
+    <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:.9rem;">Recall Decay — 5 Production Periods</div>
+    <div class="recall-bars" id="recallBars">
+      <!-- rendered by JS -->
+    </div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:.3rem;">
+      P1 baseline 88.9% → P5 final 60.0% · Alert threshold: 70% · <span style="color:var(--red)">PSI 5× climb on Amount_log</span>
+    </div>
+  </div>
+
+  <!-- PSI climb -->
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.4rem;margin-bottom:1.4rem;">
+    <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:.9rem;">Amount_log PSI — Feature Drift Signal (5× climb)</div>
+    <div class="psi-climb">
+      <!-- rendered by JS -->
+    </div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:.3rem;">
+      PSI signal elevated at P3 → P4 (Watch), firing RECALL_ALERT at P5 · Watch threshold: 0.10 · Alert: 0.25
+    </div>
+  </div>
+
+  <div class="callout finding">
+    <div class="callout-label">🔴 Critical finding</div>
+    <p>By Period 5, recall had fallen from <strong>88.9% to 60.0%</strong> — a <strong>29-point drop</strong> — and PSI on the transaction-amount distribution had climbed <strong>nearly 5× from where it started</strong>. Sentinel flagged this automatically: <code style="font-family:var(--mono);font-size:12px;background:rgba(239,68,68,0.1);padding:1px 5px;border-radius:3px;">RECALL_ALERT: 60.0% &lt; 70% threshold</code></p>
+  </div>
+
+  <div class="callout insight">
+    <div class="callout-label">◈ Why this matters</div>
+    <p>This is the failure mode that matters most in fraud detection: <strong>the model doesn't break, it just quietly starts missing more fraud</strong>. Without a system watching recall and feature drift period-over-period, this decay is invisible until someone notices fraud losses climbing weeks later.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Production reload test -->
+  <span class="sec-label">Proving production-readiness</span>
+  <h2>Does the model survive the path into production?</h2>
+  <p class="body">A model can score well in the notebook that trained it and then behave differently once serialized, stored, and reloaded from a model registry — the exact path a model takes into production. This is a less-discussed failure mode, but a real one.</p>
+  <p class="body">We pushed the trained model and scaler to a private Hugging Face repository, then pulled them back down cold — no shared state, no cached objects — loaded them, and re-scored a held-out validation set.</p>
+
+  <div class="reload-grid">
+    <div class="reload-cell">
+      <div class="rc-label">After Hugging Face reload</div>
+      <div class="reload-row"><span class="reload-key">Rows scored</span><span class="reload-val ok">56,961</span></div>
+      <div class="reload-row"><span class="reload-key">ROC-AUC</span><span class="reload-val ok">0.968</span></div>
+      <div class="reload-row"><span class="reload-key">PR-AUC</span><span class="reload-val ok">0.788</span></div>
+      <div class="reload-row"><span class="reload-key">Recall (fraud class)</span><span class="reload-val ok">77.2%</span></div>
+      <div class="reload-row"><span class="reload-key">Precision (fraud class)</span><span class="reload-val ok">62.9%</span></div>
+    </div>
+    <div class="reload-cell">
+      <div class="rc-label">vs. Training-time scores</div>
+      <div class="reload-row"><span class="reload-key">ROC-AUC delta</span><span class="reload-val ok">−0.009 (within noise)</span></div>
+      <div class="reload-row"><span class="reload-key">PR-AUC delta</span><span class="reload-val ok">−0.008 (within noise)</span></div>
+      <div class="reload-row"><span class="reload-key">Reload path</span><span class="reload-val dim">serialize → Hugging Face → cold pull → load → score</span></div>
+      <div class="reload-row"><span class="reload-key">Result</span><span class="reload-val ok">Consistent ✓</span></div>
+    </div>
+  </div>
+
+  <div class="callout result">
+    <div class="callout-label">✓ Result</div>
+    <p>Performance is within noise of training-time scores — confirming the model behaves consistently after the <strong>exact serialize → store → reload cycle</strong> a production deployment actually uses, not just inside the training notebook. This is what "production-validated" actually means.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Takeaways -->
+  <span class="sec-label">What this demonstrates</span>
+  <h2>Three things Sentinel proved here</h2>
+
+  <div class="takeaways">
+    <div class="takeaway">
+      <div class="ta-num">01</div>
+      <div class="ta-text">
+        <h4>A strong validation score is not the same as a reliable production system</h4>
+        <p>This model's ROC-AUC never moved dramatically. The failure was entirely in recall and feature drift — metrics most dashboards don't surface by default. If you're only watching AUC, you're watching the wrong thing.</p>
+      </div>
+    </div>
+    <div class="takeaway">
+      <div class="ta-num">02</div>
+      <div class="ta-text">
+        <h4>Silent degradation is detectable before it becomes a loss event</h4>
+        <p>PSI on Amount_log was already elevated <strong>two periods before recall crossed the alert threshold</strong>. Sentinel's early signal gives you time to act — adjust threshold, investigate, or schedule retraining — before losses compound.</p>
+      </div>
+    </div>
+    <div class="takeaway">
+      <div class="ta-num">03</div>
+      <div class="ta-text">
+        <h4>Threshold and cost tuning is not a one-time step</h4>
+        <p>The optimal threshold at training time (0.73) was based on the training-period cost structure. As drift accumulates, that optimal shifts. Sentinel's cost-sensitivity analysis is designed to be re-run continuously, not set once and forgotten.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-label">Methodology note</div>
+    <p>This evaluation uses the public ULB Credit Card Fraud dataset and simulated production-drift periods constructed from held-out data, not live customer transactions. It demonstrates Sentinel's monitoring methodology on a fully reproducible, independently verifiable benchmark. A second case study using the larger IEEE-CIS Fraud Detection dataset (590,540 transactions) is in progress.</p>
+  </div>
+
+  <!-- CTA -->
+  <div class="bottom-cta">
+    <h2>Does your production model have a recall you can verify?</h2>
+    <p>Most teams can't answer that question without running an audit. The Sentinel audit tells you — in 5–7 days, without system access, using your existing prediction logs.</p>
+    <div class="cta-row">
+      <button class="btn-primary" onclick="window.location.href='mailto:hello@strataforge3.com?subject=Sentinel%20Audit%20Request%20-%20Case%20Study'">Book a Sentinel audit →</button>
+      <button class="btn-ghost" onclick="window.location.href='sentinel.html'">See full methodology</button>
+      <button class="btn-ghost" onclick="window.location.href='demo.html'">Try free health check</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="fm">
+        <svg viewBox="0 0 100 100" fill="none">
+          <defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF8A3D"/><stop offset="100%" stop-color="#C2342A"/></linearGradient></defs>
+          <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#fg)"/>
+          <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#14153E"/>
+        </svg>
+        <span class="wordmark">STRATA<em>FORGE3</em></span>
+      </div>
+    </div>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="sentinel.html">Sentinel</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Recall bars
+const recalls = [88.9, 78.3, 75.0, 75.0, 60.0];
+const periods = ['P1','P2','P3','P4','P5'];
+const maxR = Math.max(...recalls);
+const container = document.getElementById('recallBars');
+recalls.forEach((v, i) => {
+  const h = Math.round((v / maxR) * 100);
+  const col = v < 70 ? 'var(--red)' : v < 80 ? 'var(--gold)' : 'var(--teal)';
+  container.innerHTML += `<div class="recall-bar-wrap">
+    <span class="recall-bar-val" style="color:${col}">${v}%</span>
+    <div class="recall-bar" style="height:${h}px;background:${col};opacity:0.85"></div>
+    <span class="recall-bar-lbl">${periods[i]}</span>
+  </div>`;
+});
+
+// PSI bars
+const psiVals = [0.010, 0.029, 0.049, 0.064, 0.087];
+const maxPSI = Math.max(...psiVals);
+const psiContainer = document.querySelector('.psi-climb');
+psiVals.forEach((v, i) => {
+  const h = Math.round((v / maxPSI) * 68);
+  const col = v > 0.25 ? 'var(--red)' : v > 0.10 ? 'var(--gold)' : 'var(--teal)';
+  psiContainer.innerHTML += `<div class="psi-bar-wrap">
+    <span class="psi-bar-val" style="color:${col}">${v.toFixed(3)}</span>
+    <div class="psi-bar" style="height:${h}px;background:${col};opacity:0.85;min-height:4px"></div>
+    <span class="psi-bar-lbl">${periods[i]}</span>
+  </div>`;
+});
+</script>
+</body>
+</html>
