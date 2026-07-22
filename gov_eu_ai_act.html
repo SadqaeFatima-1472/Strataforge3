@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EU AI Act Compliance for Fraud & Credit AI — Strataforge Sentinel</title>
+<meta name="description" content="Credit scoring and fraud detection AI are high-risk under the EU AI Act. Sentinel produces the Articles 9–17 documentation in 5–7 days, without system access.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#14153E;--bg2:#1B1C4C;--bg3:#22245A;
+  --border:rgba(90,100,220,0.18);--text:#F6F5F2;--muted:rgba(220,218,240,0.55);--dim:rgba(220,218,240,0.28);
+  --orange:#FF8A3D;--orange2:#FFB85C;--crimson:#C2342A;
+  --teal:#14B8A9;--gold:#E8B020;--red:#EF4444;--blue:#6270F0;--blue2:#8490FF;
+  --sans:'Inter',-apple-system,sans-serif;--mono:'JetBrains Mono',monospace;--serif:'Playfair Display',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+::selection{background:var(--crimson);color:#fff;}
+
+.nodes{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(circle,rgba(180,185,255,0.07) 1px,transparent 1.5px);
+  background-size:54px 54px;mask-image:radial-gradient(ellipse 900px 600px at 80% 8%,black 0%,transparent 70%);}
+.hex{position:fixed;top:0;right:0;width:520px;height:520px;pointer-events:none;z-index:0;opacity:.9;}
+
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:68px;background:rgba(20,21,62,0.9);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);}
+.nav-mark{display:flex;align-items:center;gap:9px;}
+.nav-mark svg{width:26px;height:26px;}
+.nav-brand{font-family:var(--serif);font-weight:700;font-size:15px;}
+.nav-tag{font-family:var(--mono);font-size:10px;color:var(--orange2);border:1px solid rgba(255,184,92,0.28);padding:2px 7px;border-radius:4px;margin-left:3px;}
+.nav-links{display:flex;gap:24px;}
+.nav-links a{font-size:13.5px;color:var(--muted);transition:color .15s;}
+.nav-links a:hover,.nav-links a.active{color:var(--text);}
+.nav-cta{background:linear-gradient(135deg,var(--orange),var(--crimson));color:#1A0E04;font-weight:700;font-size:13px;padding:9px 18px;border:none;cursor:pointer;border-radius:6px;font-family:var(--sans);}
+
+.page{max-width:860px;margin:0 auto;padding:3.5rem 32px 6rem;position:relative;z-index:1;}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;display:flex;align-items:center;gap:8px;}
+.eyebrow::before{content:'';width:18px;height:1px;background:var(--gold);}
+h1{font-family:var(--serif);font-size:clamp(1.9rem,4.5vw,3rem);line-height:1.1;margin-bottom:1rem;}
+h1 em{font-style:italic;color:var(--orange2);}
+.body{font-size:15px;line-height:1.78;color:var(--muted);margin-bottom:1rem;}
+.body strong{color:var(--text);font-weight:600;}
+hr.div{border:none;border-top:1px solid var(--border);margin:2rem 0;}
+.sec-label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.5rem;display:block;}
+.sec-label.gold{color:var(--gold);}
+.sec-label.orange{color:var(--orange);}
+.sec-label.teal{color:var(--teal);}
+.sec-label.blue{color:var(--blue2);}
+h2{font-family:var(--serif);font-size:1.6rem;line-height:1.2;margin-bottom:.8rem;}
+
+/* Deadline hero */
+.deadline-hero{background:rgba(232,176,32,0.06);border:1px solid rgba(232,176,32,0.22);border-radius:14px;padding:2rem;margin-bottom:2rem;display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;}
+.deadline-hero h2{font-family:var(--serif);font-size:1.5rem;color:var(--gold);margin-bottom:.4rem;}
+.deadline-hero p{font-size:13.5px;color:var(--muted);line-height:1.65;}
+.deadline-box{text-align:center;flex-shrink:0;}
+.deadline-num{font-family:var(--mono);font-size:2.6rem;font-weight:500;color:var(--gold);line-height:1;}
+.deadline-label{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:.3rem;}
+.omnibus-note{display:inline-flex;align-items:flex-start;gap:8px;background:rgba(98,112,240,0.07);border:1px solid rgba(98,112,240,0.2);border-radius:7px;padding:.65rem 1rem;margin-top:.9rem;font-size:12.5px;color:var(--muted);line-height:1.6;}
+.omnibus-note strong{color:var(--blue2);}
+
+/* Scope table */
+.tbl-wrap{overflow-x:auto;margin-bottom:1.4rem;}
+.scope-table{width:100%;border-collapse:collapse;}
+.scope-table th{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);text-align:left;padding:.6rem .9rem;border-bottom:1px solid var(--border);}
+.scope-table td{padding:.75rem .9rem;border-bottom:1px solid rgba(90,100,220,0.07);font-size:13.5px;vertical-align:middle;}
+.scope-table tr:last-child td{border-bottom:none;}
+.in-scope{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;color:var(--red);background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.18);padding:2px 8px;border-radius:4px;}
+.maybe{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;color:var(--gold);background:rgba(232,176,32,0.08);border:1px solid rgba(232,176,32,0.18);padding:2px 8px;border-radius:4px;}
+.out-scope{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;color:var(--teal);background:rgba(20,184,169,0.08);border:1px solid rgba(20,184,169,0.18);padding:2px 8px;border-radius:4px;}
+
+/* Callouts */
+.callout{border-radius:8px;padding:1.1rem 1.3rem;margin-bottom:1.2rem;}
+.callout.gold{background:rgba(232,176,32,0.05);border-left:3px solid var(--gold);}
+.callout.orange{background:rgba(255,138,61,0.05);border-left:3px solid var(--orange);}
+.callout.teal{background:rgba(20,184,169,0.05);border-left:3px solid var(--teal);}
+.callout.red{background:rgba(239,68,68,0.05);border-left:3px solid var(--red);}
+.callout.note{background:rgba(90,100,220,0.05);border-left:3px solid rgba(90,100,220,0.3);}
+.callout.blue{background:rgba(98,112,240,0.05);border-left:3px solid var(--blue);}
+.cl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem;}
+.callout.gold .cl{color:var(--gold);}.callout.orange .cl{color:var(--orange);}
+.callout.teal .cl{color:var(--teal);}.callout.red .cl{color:var(--red);}
+.callout.note .cl{color:rgba(172,173,212,0.4);}.callout.blue .cl{color:var(--blue2);}
+.callout p{font-size:14px;color:var(--muted);line-height:1.65;}
+.callout strong{color:var(--text);}
+
+/* Article grid */
+.article-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.4rem;}
+.article-card{background:var(--bg2);padding:1.3rem;transition:background .2s;}
+.article-card:hover{background:var(--bg3);}
+.art-num{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem;}
+.art-title{font-size:14px;font-weight:600;margin-bottom:.3rem;}
+.art-body{font-size:12.5px;color:var(--muted);line-height:1.6;}
+.sentinel-tag{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--orange2);background:rgba(255,138,61,0.08);border:1px solid rgba(255,138,61,0.2);padding:2px 6px;border-radius:4px;margin-top:.5rem;}
+
+/* Who grid */
+.who-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.4rem;}
+.who-cell{background:var(--bg2);padding:1.3rem 1.4rem;}
+.who-head{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.7rem;}
+.who-cell.provider .who-head{color:var(--red);}.who-cell.deployer .who-head{color:var(--gold);}
+.who-item{font-size:13px;color:var(--muted);padding:.22rem 0;display:flex;align-items:flex-start;gap:6px;line-height:1.5;}
+
+/* Extra-territorial banner */
+.extra-banner{background:rgba(98,112,240,0.06);border:1px solid rgba(98,112,240,0.2);border-radius:10px;padding:1.2rem 1.4rem;margin-bottom:1.4rem;display:flex;gap:1rem;align-items:flex-start;}
+.extra-flag{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);background:rgba(98,112,240,0.1);border:1px solid rgba(98,112,240,0.25);padding:3px 9px;border-radius:4px;flex-shrink:0;margin-top:2px;}
+.extra-banner h4{font-size:14px;font-weight:600;margin-bottom:.25rem;}
+.extra-banner p{font-size:13px;color:var(--muted);line-height:1.65;}
+
+/* Fines */
+.fines-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1.4rem;}
+.fine-cell{background:var(--bg2);padding:1.1rem 1.3rem;}
+.fine-num{font-family:var(--mono);font-size:1.4rem;font-weight:500;margin-bottom:.18rem;}
+.fine-lbl{font-size:12px;color:var(--dim);}
+
+/* Deliverables */
+.deliverable-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1.4rem;}
+.del-row{display:grid;grid-template-columns:3rem 1fr 10rem;gap:1rem;align-items:start;padding:.9rem 1.2rem;border-bottom:1px solid rgba(90,100,220,0.07);transition:background .2s;}
+.del-row:last-child{border-bottom:none;}
+.del-row:hover{background:var(--bg2);}
+.del-art{font-family:var(--mono);font-size:10.5px;color:var(--gold);padding-top:2px;}
+.del-content h4{font-size:13.5px;font-weight:600;margin-bottom:.15rem;}
+.del-content p{font-size:12.5px;color:var(--muted);line-height:1.5;}
+.del-status{font-family:var(--mono);font-size:10.5px;color:var(--teal);text-align:right;padding-top:3px;}
+
+/* Case study cards */
+.cs-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.4rem;}
+.cs-card{display:block;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;transition:border-color .2s;}
+.cs-card:hover{border-color:var(--orange);}
+.cs-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;}
+.cs-card.c1 .cs-tag{color:var(--orange);}
+.cs-card.c2 .cs-tag{color:var(--teal);}
+.cs-card h4{font-size:14px;font-weight:600;margin-bottom:.3rem;}
+.cs-card p{font-size:12.5px;color:var(--muted);line-height:1.5;}
+.cs-arrow{font-family:var(--mono);font-size:11px;margin-top:.7rem;}
+.cs-card.c1 .cs-arrow{color:var(--orange);}
+.cs-card.c2 .cs-arrow{color:var(--teal);}
+
+/* ── MEMO TEASER ── */
+.memo-teaser{background:rgba(98,112,240,0.05);border:1px solid rgba(98,112,240,0.18);border-radius:14px;overflow:hidden;margin-bottom:1.4rem;}
+.memo-teaser-head{padding:1.2rem 1.4rem;border-bottom:1px solid rgba(98,112,240,0.12);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.memo-teaser-head h3{font-family:var(--serif);font-size:1.2rem;}
+.memo-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--blue2);background:rgba(98,112,240,0.1);border:1px solid rgba(98,112,240,0.22);padding:3px 9px;border-radius:4px;}
+.memo-body{padding:1.4rem;}
+.memo-body .pull-quote{font-family:var(--serif);font-size:1.05rem;line-height:1.6;color:var(--text);border-left:3px solid var(--blue);padding:.6rem 0 .6rem 1.2rem;margin-bottom:1rem;font-style:italic;}
+.memo-body .pull-quote em{font-style:normal;color:var(--blue2);}
+.memo-body p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:.75rem;}
+.memo-body p strong{color:var(--text);}
+.memo-body p:last-child{margin-bottom:0;}
+.memo-cta{padding:.9rem 1.4rem;border-top:1px solid rgba(98,112,240,0.12);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;background:rgba(98,112,240,0.03);}
+.memo-cta span{font-size:12.5px;color:var(--muted);}
+.memo-cta a{font-family:var(--mono);font-size:12px;color:var(--blue2);border:1px solid rgba(98,112,240,0.28);padding:6px 14px;border-radius:5px;transition:background .15s;}
+.memo-cta a:hover{background:rgba(98,112,240,0.1);}
+
+/* Honest box */
+.honest-box{background:rgba(90,100,220,0.04);border:1px solid rgba(90,100,220,0.15);border-radius:10px;padding:1.3rem 1.4rem;margin-bottom:1.4rem;}
+.honest-box h4{font-size:14.5px;font-weight:600;margin-bottom:.6rem;}
+.honest-box p{font-size:13.5px;color:var(--muted);line-height:1.7;}
+
+/* CTA */
+.bottom-cta{background:rgba(255,138,61,0.05);border:1px solid rgba(255,138,61,0.18);border-radius:14px;padding:2rem;text-align:center;margin-top:1.6rem;}
+.bottom-cta h2{font-family:var(--serif);font-size:1.5rem;margin-bottom:.5rem;}
+.bottom-cta p{font-size:14px;color:var(--muted);margin-bottom:1.4rem;line-height:1.65;max-width:500px;margin-left:auto;margin-right:auto;}
+.cta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.btn-pr{background:linear-gradient(135deg,var(--orange),var(--crimson));color:#1A0E04;font-weight:700;font-size:14px;padding:12px 24px;border:none;cursor:pointer;border-radius:7px;font-family:var(--sans);}
+.btn-gh{background:transparent;color:var(--text);border:1px solid rgba(246,245,242,0.15);font-size:14px;font-weight:500;padding:12px 22px;cursor:pointer;border-radius:7px;font-family:var(--sans);}
+.btn-gh:hover{border-color:var(--orange);}
+
+footer{border-top:1px solid var(--border);padding:36px 32px;position:relative;z-index:1;}
+.fi{max-width:860px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+.fm{display:flex;align-items:center;gap:9px;}
+.fm svg{width:20px;height:20px;}
+.wm{font-family:var(--serif);font-weight:700;font-size:14px;}
+.wm em{font-style:normal;color:var(--orange);}
+.fl{display:flex;gap:20px;}
+.fl a{font-size:13px;color:var(--dim);transition:color .15s;}
+.fl a:hover{color:var(--text);}
+
+@media(max-width:640px){
+  nav{padding:0 16px;}
+  .nav-links{display:none;}
+  .page{padding:2.5rem 16px 4rem;}
+  .deadline-hero{grid-template-columns:1fr;}
+  .who-grid{grid-template-columns:1fr;}
+  .fines-row{grid-template-columns:1fr;}
+  .del-row{grid-template-columns:2.5rem 1fr;}
+  .del-status{display:none;}
+  .cs-cards{grid-template-columns:1fr;}
+  footer{padding:28px 16px;}
+}
+</style>
+</head>
+<body>
+<div class="nodes"></div>
+<svg class="hex" viewBox="0 0 520 520" fill="none">
+  <defs><linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF8A3D"/><stop offset="100%" stop-color="#C2342A"/></linearGradient></defs>
+  <polygon points="440,30 498,63 498,131 440,164 382,131 382,63" fill="url(#hg)" opacity=".88"/>
+  <polygon points="358,78 408,106 408,162 358,190 308,162 308,106" fill="url(#hg)" opacity=".55"/>
+  <polygon points="460,154 518,187 518,254 460,287 402,254 402,187" fill="url(#hg)" opacity=".7"/>
+  <polygon points="378,214 425,240 425,295 378,321 331,295 331,240" fill="url(#hg)" opacity=".4"/>
+</svg>
+
+<nav>
+  <div class="nav-mark">
+    <svg viewBox="0 0 100 100" fill="none">
+      <defs><linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF8A3D"/><stop offset="100%" stop-color="#C2342A"/></linearGradient></defs>
+      <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#ng)"/>
+      <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#1E2068"/>
+    </svg>
+    <span class="nav-brand">STRATAFORGE3</span>
+    <span class="nav-tag">SENTINEL</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="sentinel.html">Sentinel</a>
+    <a href="eu-ai-act.html" class="active">EU AI Act</a>
+    <a href="memo.html">Research</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <button class="nav-cta" onclick="window.location.href='mailto:hello@strataforge3.com?subject=EU%20AI%20Act%20Compliance%20-%20Sentinel'">Get the documentation →</button>
+</nav>
+
+<div class="page">
+
+  <p class="eyebrow">EU AI Act · Compliance Guide for Financial AI</p>
+  <h1>Your fraud and credit AI is<br><em>almost certainly</em> in scope.</h1>
+  <p class="body">The EU AI Act classifies credit scoring, AML risk profiling, and most fraud detection AI as high-risk systems. High-risk means documented, monitored, and auditable — before you deploy, not after an incident. Strataforge Sentinel produces the technical documentation Articles 9–17 require, in 5–7 days, without system access.</p>
+
+  <!-- Deadline hero -->
+  <div class="deadline-hero">
+    <div>
+      <h2>August 2, 2026 — the original compliance date</h2>
+      <p>High-risk AI system obligations under Articles 9–17 have been the target date for financial services firms since the Act entered into force on August 1, 2024. Most compliance teams are treating this as the operative deadline regardless of the Omnibus extension, since the extension has not yet been formally enacted into law.</p>
+      <div class="omnibus-note">
+        <span style="color:var(--blue);flex-shrink:0;margin-top:1px;">ⓘ</span>
+        <div><strong>Omnibus update (May 7, 2026):</strong> A provisional political agreement defers standalone Annex III high-risk obligations to December 2, 2027 — subject to formal adoption expected before August 2026. Prudent planning still treats August 2026 as binding. A delay that has not been formally adopted is not a delay you can rely on in front of a regulator.</div>
+      </div>
+    </div>
+    <div class="deadline-box">
+      <div class="deadline-num">Aug<br>2026</div>
+      <div class="deadline-label">Active compliance target</div>
+    </div>
+  </div>
+
+  <!-- Scope -->
+  <span class="sec-label gold">Who is in scope</span>
+  <h2>Which AI systems are high-risk?</h2>
+  <p class="body">The Act applies to providers and deployers of AI systems placed on the EU market or used by people in the EU — <strong>regardless of where the provider is headquartered.</strong></p>
+
+  <div class="extra-banner">
+    <div class="extra-flag">Extraterritorial</div>
+    <div>
+      <h4>Jurisdiction follows the user, not the company</h4>
+      <p>Article 2 applies the EU AI Act to any provider whose AI system is used in the EU or whose output affects EU residents — regardless of where the company is registered. GCC fintechs, South Asian lenders, and US fraud-detection providers all carry obligations if their AI touches EU-resident data or decisions.</p>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="scope-table">
+      <thead><tr><th>AI system type</th><th>Annex III status</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Credit scoring / loan approval</td><td><span class="in-scope">⚠ High-risk</span></td><td style="font-size:13px;color:var(--muted)">Explicitly listed. No exception applies.</td></tr>
+        <tr><td>Insurance underwriting / pricing</td><td><span class="in-scope">⚠ High-risk</span></td><td style="font-size:13px;color:var(--muted)">Explicitly listed under Annex III(5)(c).</td></tr>
+        <tr><td>AML / transaction risk profiling</td><td><span class="in-scope">⚠ High-risk</span></td><td style="font-size:13px;color:var(--muted)">Profiles individuals — falls under essential services access.</td></tr>
+        <tr><td>Fraud detection (narrow, purpose-specific)</td><td><span class="out-scope">✓ Exempt</span></td><td style="font-size:13px;color:var(--muted)">Exception in Annex III(5)(b) — but only if purely fraud-detection.</td></tr>
+        <tr><td>Fraud detection (also profiles behaviour / risk)</td><td><span class="maybe">⚠ Assess case-by-case</span></td><td style="font-size:13px;color:var(--muted)">Exception lapses if system characterises individuals beyond fraud signal.</td></tr>
+        <tr><td>Internal AI tools (no customer-facing decision)</td><td><span class="out-scope">✓ Likely out of scope</span></td><td style="font-size:13px;color:var(--muted)">Minimal risk if no impact on individuals' rights or access.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout gold">
+    <div class="cl">◈ The fraud exception is narrower than it looks</div>
+    <p>Annex III creates a carve-out for AI used <strong>specifically to detect financial fraud.</strong> But if your fraud model also generates behavioural risk scores, segments customers, or informs decisions about access to services — the exception lapses and high-risk obligations apply in full. <strong>Each system needs individual assessment.</strong> Sentinel's governance audit includes this classification.</p>
+  </div>
+
+  <hr class="div">
+
+  <!-- Articles -->
+  <span class="sec-label orange">What high-risk compliance requires</span>
+  <h2>Articles 9–17: what you must document and prove.</h2>
+
+  <div class="article-grid">
+    <div class="article-card">
+      <div class="art-num">Article 9</div>
+      <div class="art-title">Risk management system</div>
+      <div class="art-body">A documented, continuous process for identifying and mitigating risks — from development through decommissioning. Not a one-time assessment.</div>
+      <span class="sentinel-tag">◈ Sentinel produces this</span>
+    </div>
+    <div class="article-card">
+      <div class="art-num">Article 10</div>
+      <div class="art-title">Data governance</div>
+      <div class="art-body">Training, validation, and testing datasets must be documented, relevant, representative, and free of bias. For credit models: documented data lineage and bias testing.</div>
+      <span class="sentinel-tag">◈ Sentinel covers data section</span>
+    </div>
+    <div class="article-card">
+      <div class="art-num">Article 11</div>
+      <div class="art-title">Technical documentation</div>
+      <div class="art-body">Before deployment, providers must produce documentation sufficient for regulators to assess compliance — kept up to date throughout the system's operational life.</div>
+      <span class="sentinel-tag">◈ Sentinel produces this</span>
+    </div>
+    <div class="article-card">
+      <div class="art-num">Article 12</div>
+      <div class="art-title">Record-keeping and logging</div>
+      <div class="art-body">High-risk systems must log activity automatically to enable post-hoc investigation. DORA overlap applies here for financial institutions.</div>
+      <span class="sentinel-tag">◈ Sentinel audit trail</span>
+    </div>
+    <div class="article-card">
+      <div class="art-num">Article 13</div>
+      <div class="art-title">Transparency</div>
+      <div class="art-body">Deployers must be given sufficient information to understand what the system does, its limitations, and how to interpret its outputs. Explainability is a requirement, not a feature.</div>
+      <span class="sentinel-tag">◈ Sentinel Explain layer</span>
+    </div>
+    <div class="article-card">
+      <div class="art-num">Article 14</div>
+      <div class="art-title">Human oversight</div>
+      <div class="art-body">High-risk systems must enable human oversight. Operators must be able to intervene, override, or halt. Fully automated decisions without a human checkpoint are not compliant.</div>
+      <span class="sentinel-tag">◈ Covered in Sentinel Govern</span>
+    </div>
+    <div class="article-card">
+      <div class="art-num">Article 15</div>
+      <div class="art-title">Accuracy and robustness</div>
+      <div class="art-body">Systems must maintain appropriate accuracy throughout their lifecycle. Performance must be documented, monitored, and demonstrated — not assumed from training metrics alone.</div>
+      <span class="sentinel-tag">◈ Sentinel Detect layer</span>
+    </div>
+    <div class="article-card">
+      <div class="art-num">Article 17</div>
+      <div class="art-title">Quality management system</div>
+      <div class="art-body">Providers must have a QMS covering risk management, testing, monitoring, corrective action, and documentation throughout the system's life.</div>
+      <span class="sentinel-tag">◈ Sentinel Govern layer</span>
+    </div>
+  </div>
+
+  <hr class="div">
+
+  <!-- Provider / deployer -->
+  <span class="sec-label gold">Know your obligation tier</span>
+  <h2>Are you a provider or a deployer?</h2>
+
+  <div class="who-grid">
+    <div class="who-cell provider">
+      <div class="who-head">⚠ Provider (heavier obligations)</div>
+      <div class="who-item"><span style="color:var(--red);flex-shrink:0">→</span> You built, trained, or substantially modified the model</div>
+      <div class="who-item"><span style="color:var(--red);flex-shrink:0">→</span> You placed the AI system on the market or into service</div>
+      <div class="who-item"><span style="color:var(--red);flex-shrink:0">→</span> You own technical documentation, conformity assessment, EU database registration</div>
+      <div class="who-item"><span style="color:var(--red);flex-shrink:0">→</span> If you retrain a third-party model, you may become the provider</div>
+    </div>
+    <div class="who-cell deployer">
+      <div class="who-head">◈ Deployer (still significant obligations)</div>
+      <div class="who-item"><span style="color:var(--gold);flex-shrink:0">→</span> You use a third-party AI system under your own authority</div>
+      <div class="who-item"><span style="color:var(--gold);flex-shrink:0">→</span> You must ensure human oversight is possible</div>
+      <div class="who-item"><span style="color:var(--gold);flex-shrink:0">→</span> You must monitor performance and retain logs</div>
+      <div class="who-item"><span style="color:var(--gold);flex-shrink:0">→</span> You must receive adequate technical documentation from your vendor</div>
+    </div>
+  </div>
+
+  <hr class="div">
+
+  <!-- Penalties -->
+  <span class="sec-label orange">What non-compliance costs</span>
+  <h2>Penalty structure exceeds GDPR.</h2>
+
+  <div class="fines-row">
+    <div class="fine-cell"><div class="fine-num" style="color:var(--red)">€35M</div><div class="fine-lbl">or 7% global turnover — prohibited practices (whichever higher)</div></div>
+    <div class="fine-cell"><div class="fine-num" style="color:var(--gold)">€15M</div><div class="fine-lbl">or 3% global turnover — high-risk non-compliance (whichever higher)</div></div>
+    <div class="fine-cell"><div class="fine-num" style="color:var(--muted)">€7.5M</div><div class="fine-lbl">or 1% global turnover — incorrect information to authorities</div></div>
+  </div>
+
+  <div class="callout red">
+    <div class="cl">⚠ Serious incident reporting</div>
+    <p>A "serious incident" includes systematic discriminatory credit decisions or AML failures causing regulatory breaches. <strong>Reporting timeline: 15 working days from awareness.</strong> This requires an audit trail that exists before the incident — not one assembled after the call from the regulator.</p>
+  </div>
+
+  <hr class="div">
+
+  <!-- What Sentinel produces -->
+  <span class="sec-label teal">What Sentinel produces</span>
+  <h2>The documentation you need. In 5–7 days.</h2>
+  <p class="body">Sentinel produces the <strong>technical documentation, monitoring evidence, and explainability outputs</strong> that Articles 9–17 require you to have — the things your compliance team, legal team, and regulator will ask for.</p>
+
+  <div class="deliverable-list">
+    <div class="del-row"><div class="del-art">Art. 9</div><div class="del-content"><h4>Risk management system documentation</h4><p>Continuous risk identification and mitigation record — recall decay, feature drift signals, alert history, and corrective action log.</p></div><div class="del-status">✓ Included</div></div>
+    <div class="del-row"><div class="del-art">Art. 11</div><div class="del-content"><h4>Technical documentation package</h4><p>Model architecture, training configuration, feature set, threshold selection rationale, and production performance record — sufficient for regulatory review.</p></div><div class="del-status">✓ Included</div></div>
+    <div class="del-row"><div class="del-art">Art. 12</div><div class="del-content"><h4>Automated audit trail</h4><p>Production period logs with timestamped performance metrics, alert triggers, and threshold events — DORA-aligned and suitable for post-hoc regulatory investigation.</p></div><div class="del-status">✓ Included</div></div>
+    <div class="del-row"><div class="del-art">Art. 13</div><div class="del-content"><h4>Explainability outputs</h4><p>Feature attribution per decision, counterfactual explanations, and plain-language executive summary — transparency your deployers and regulators need.</p></div><div class="del-status">✓ Included</div></div>
+    <div class="del-row"><div class="del-art">Art. 15</div><div class="del-content"><h4>Performance monitoring evidence</h4><p>ROC-AUC, recall, precision, and PSI trends across production periods — documented, timestamped, benchmarked against validated baseline at deployment.</p></div><div class="del-status">✓ Included</div></div>
+    <div class="del-row"><div class="del-art">Art. 17</div><div class="del-content"><h4>Quality management documentation</h4><p>Threshold selection and optimisation record, retraining triggers, human oversight checkpoints, and corrective action framework.</p></div><div class="del-status">✓ Included</div></div>
+  </div>
+
+  <div class="callout note">
+    <div class="cl">◈ DORA overlap</div>
+    <p>For financial institutions, the EU AI Act sits alongside DORA (applies from January 2025). DORA requires ICT risk management, incident reporting, and third-party risk oversight. <strong>Sentinel's audit trail and monitoring documentation satisfies obligations under both frameworks</strong> — one engagement, two regulatory footprints covered.</p>
+  </div>
+
+  <hr class="div">
+
+  <!-- Case studies -->
+  <span class="sec-label teal">Proven methodology</span>
+  <h2>Two independent case studies. Real numbers.</h2>
+  <p class="body">The documentation Sentinel produces is grounded in a validated observability methodology — not a template. Two published case studies on public datasets demonstrate the monitoring approach that underlies every audit engagement.</p>
+
+  <div class="cs-cards">
+    <a href="case-study-fraud.html" class="cs-card c1">
+      <div class="cs-tag">Case Study 1</div>
+      <h4>ULB Credit Card Fraud</h4>
+      <p>284,807 transactions · 29-point recall drop caught · PSI 5× climb detected before loss event</p>
+      <div class="cs-arrow">Read case study →</div>
+    </a>
+    <a href="case-study-ieee.html" class="cs-card c2">
+      <div class="cs-tag">Case Study 2</div>
+      <h4>IEEE-CIS Fraud Detection</h4>
+      <p>590,540 transactions · 5 periods · 0 false alarms · stable band 65–72% recall throughout</p>
+      <div class="cs-arrow">Read case study →</div>
+    </a>
+  </div>
+
+  <hr class="div">
+
+  <!-- MEMO TEASER -->
+  <span class="sec-label blue">Research · Working memo</span>
+  <h2>The governance argument behind Sentinel.</h2>
+  <p class="body">The distinction between drift detection and output admissibility — what the EU AI Act actually needs from monitoring systems — is explored in depth in a working memo published by Strataforge3's founder.</p>
+
+  <div class="memo-teaser">
+    <div class="memo-teaser-head">
+      <h3>What Third-Party AI Auditors Should Be Allowed to See — and Enforce</h3>
+      <span class="memo-tag">Working Memo · AI Governance</span>
+    </div>
+    <div class="memo-body">
+      <div class="pull-quote">
+        "Most 'monitoring' solutions in the market today are statistical drift detectors — they tell you <em>that</em> something changed, not whether the output itself was admissible. That distinction matters more than it might first appear."
+      </div>
+      <p>Current AI governance is dominated by the evaluation paradigm: run a model before deployment, get a score, ship. This misses the more consequential gap — at the <strong>output layer</strong>, where a model's response actually becomes a decision that affects someone. The EU AI Act's Articles 9, 12, and 17 are closer to requiring "replayable admissibility receipts" than aggregate drift statistics, even though most compliance tooling is built around the latter.</p>
+      <p>The memo draws on two years of operating a production admissibility system — MaqasidAI/MACI — to argue for a specific, narrow expansion of what independent auditors should be able to observe and block. It also names the one piece the technical work alone can't answer: where legal authority for "halt" should sit, and why that is a governance research question, not a model architecture question.</p>
+    </div>
+    <div class="memo-cta">
+      <span>~1,570 words · Syeda Beenish Fatima · July 2026</span>
+      <a href="memo.html">Read the full memo →</a>
+    </div>
+  </div>
+
+  <!-- Honest box -->
+  <div class="honest-box">
+    <h4>What Sentinel is not</h4>
+    <p>Sentinel is a technical audit and observability service, not a legal or regulatory adviser. The documentation it produces supports your compliance function — it does not replace legal review, a conformity assessment, or EU database registration, all of which remain your responsibility. If you are uncertain whether your specific AI system falls under Annex III, consult a regulatory lawyer before relying on any technical output.</p>
+  </div>
+
+  <div class="bottom-cta">
+    <h2>The documentation gap is fixable in 5–7 days.</h2>
+    <p>Articles 9–17 technical documentation, monitoring evidence, and explainability outputs — without system access, without downtime, and without a six-month engagement.</p>
+    <div class="cta-row">
+      <button class="btn-pr" onclick="window.location.href='mailto:hello@strataforge3.com?subject=EU%20AI%20Act%20Compliance%20-%20Sentinel%20Documentation'">Get the documentation →</button>
+      <button class="btn-gh" onclick="window.location.href='sentinel.html'">See full audit scope</button>
+      <button class="btn-gh" onclick="window.location.href='pricing.html'">View pricing</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="fi">
+    <div class="fm">
+      <svg viewBox="0 0 100 100" fill="none">
+        <defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF8A3D"/><stop offset="100%" stop-color="#C2342A"/></linearGradient></defs>
+        <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#fg)"/>
+        <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#14153E"/>
+      </svg>
+      <span class="wm">STRATA<em>FORGE3</em></span>
+    </div>
+    <div class="fl">
+      <a href="index.html">Home</a>
+      <a href="sentinel.html">Sentinel</a>
+      <a href="case-study-fraud.html">Case Studies</a>
+      <a href="memo.html">Research</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
