@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Third-Party AI Auditors Should Be Allowed to See — and Enforce</title>
+<meta name="description" content="A memo arguing for a specific, narrow expansion of what independent AI auditors should be able to observe and block — at the output layer, not just pre-deployment. By Syeda Beenish Fatima.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#14153E; --bg2:#1B1C4C; --bg3:#22245A;
+  --border:rgba(90,100,220,0.18); --border2:rgba(255,138,61,0.14);
+  --text:#F6F5F2; --muted:rgba(220,218,240,0.6); --dim:rgba(220,218,240,0.28);
+  --orange:#FF8A3D; --orange2:#FFB85C; --crimson:#C2342A;
+  --teal:#14B8A9; --gold:#E8B020;
+  --sans:'Inter',-apple-system,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --serif:'Playfair Display',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+::selection{background:var(--crimson);color:#fff;}
+
+.nodes{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(circle,rgba(180,185,255,0.06) 1px,transparent 1.5px);
+  background-size:54px 54px;
+  mask-image:radial-gradient(ellipse 700px 500px at 70% 5%,black 0%,transparent 65%);}
+
+/* Nav */
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:64px;background:rgba(20,21,62,0.88);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);}
+.nav-mark{display:flex;align-items:center;gap:9px;}
+.nav-mark svg{width:24px;height:24px;}
+.nav-brand{font-family:var(--serif);font-weight:700;font-size:14px;}
+.nav-writing{font-family:var(--mono);font-size:10px;color:var(--dim);border:1px solid var(--border);padding:2px 7px;border-radius:4px;margin-left:3px;}
+.nav-links{display:flex;gap:22px;}
+.nav-links a{font-size:13px;color:var(--muted);transition:color .15s;}
+.nav-links a:hover{color:var(--text);}
+
+/* Page */
+.page{max-width:720px;margin:0 auto;padding:3rem 32px 6rem;position:relative;z-index:1;}
+
+/* Memo header */
+.memo-type{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.memo-type::before{content:'';width:16px;height:1px;background:var(--gold);}
+
+h1{font-family:var(--serif);font-size:clamp(1.8rem,4vw,2.7rem);line-height:1.1;margin-bottom:1.2rem;
+  font-weight:700;}
+
+.byline{display:flex;flex-wrap:wrap;gap:.8rem 2rem;margin-bottom:2.2rem;padding-bottom:1.2rem;
+  border-bottom:1px solid var(--border);}
+.byline-item{font-family:var(--mono);font-size:11px;color:var(--dim);display:flex;align-items:center;gap:6px;}
+.byline-item span{color:var(--muted);}
+
+/* Abstract */
+.abstract{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);
+  border-radius:0 8px 8px 0;padding:1.2rem 1.4rem;margin-bottom:2.4rem;}
+.abstract-label{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:.5rem;}
+.abstract p{font-size:14px;color:var(--muted);line-height:1.7;}
+
+/* Body text */
+.memo h2{font-family:var(--serif);font-size:1.35rem;line-height:1.2;margin:2.2rem 0 .7rem;
+  color:var(--text);}
+.memo p{font-size:15.5px;line-height:1.82;color:var(--muted);margin-bottom:1.05rem;}
+.memo p strong{color:var(--text);font-weight:600;}
+.memo ul,.memo ol{margin:.6rem 0 1rem 1.4rem;}
+.memo li{font-size:15px;line-height:1.75;color:var(--muted);margin-bottom:.35rem;}
+.memo li strong{color:var(--text);}
+
+/* Key term callout */
+.term{display:inline;background:rgba(255,184,92,0.1);border-bottom:1px solid rgba(255,184,92,0.3);
+  color:var(--orange2);padding:0 2px;}
+
+/* Section break */
+.sec-rule{border:none;border-top:1px solid var(--border);margin:2rem 0;}
+
+/* Footnote-style annotation */
+.annotation{background:rgba(90,100,220,0.06);border:1px solid rgba(90,100,220,0.15);border-radius:7px;
+  padding:.9rem 1.1rem;margin:1.2rem 0;font-size:13px;color:var(--muted);line-height:1.65;}
+.annotation strong{color:var(--text);}
+
+/* Cite */
+.cite-block{border-left:2px solid var(--orange);padding:.5rem 0 .5rem 1.2rem;margin:1.4rem 0;
+  font-size:15px;line-height:1.75;color:var(--muted);font-style:italic;}
+.cite-block strong{color:var(--text);font-style:normal;}
+
+/* Bottom nav */
+.bottom-nav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+  padding-top:2rem;margin-top:2rem;border-top:1px solid var(--border);}
+.bottom-nav a{font-family:var(--mono);font-size:11.5px;color:var(--muted);transition:color .15s;
+  display:flex;align-items:center;gap:5px;}
+.bottom-nav a:hover{color:var(--orange2);}
+
+/* Share strip */
+.share-strip{background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:1rem 1.4rem;margin-top:1.4rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.share-strip p{font-size:13px;color:var(--muted);}
+.share-strip a{font-family:var(--mono);font-size:11.5px;color:var(--orange2);border:1px solid rgba(255,184,92,0.25);
+  padding:5px 12px;border-radius:5px;transition:background .15s;}
+.share-strip a:hover{background:rgba(255,138,61,0.08);}
+
+footer{border-top:1px solid var(--border);padding:32px 32px;position:relative;z-index:1;}
+.fi{max-width:720px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
+.fm{display:flex;align-items:center;gap:8px;}
+.fm svg{width:18px;height:18px;}
+.wm{font-family:var(--serif);font-weight:700;font-size:13px;}
+.wm em{font-style:normal;color:var(--orange);}
+.fl{display:flex;gap:18px;}
+.fl a{font-size:12.5px;color:var(--dim);transition:color .15s;}
+.fl a:hover{color:var(--text);}
+
+@media(max-width:640px){
+  nav{padding:0 16px;}
+  .nav-links{display:none;}
+  .page{padding:2rem 16px 4rem;}
+  footer{padding:24px 16px;}
+}
+</style>
+</head>
+<body>
+<div class="nodes"></div>
+
+<nav>
+  <div class="nav-mark">
+    <svg viewBox="0 0 100 100" fill="none">
+      <defs><linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF8A3D"/><stop offset="100%" stop-color="#C2342A"/></linearGradient></defs>
+      <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#ng)"/>
+      <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#1E2068"/>
+    </svg>
+    <span class="nav-brand">STRATAFORGE3</span>
+    <span class="nav-writing">Research</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="sentinel.html">Sentinel</a>
+    <a href="eu-ai-act.html">EU AI Act</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <p class="memo-type">Working Memo · AI Governance</p>
+  <h1>What Third-Party AI Auditors Should Be Allowed to See — and Enforce</h1>
+
+  <div class="byline">
+    <span class="byline-item">◈ <span>Syeda Beenish Fatima</span></span>
+    <span class="byline-item">◈ <span>July 2026</span></span>
+    <span class="byline-item">◈ <span>~1,570 words</span></span>
+    <span class="byline-item">◈ <span>strataforge3.com/research</span></span>
+  </div>
+
+  <div class="abstract">
+    <div class="abstract-label">Summary</div>
+    <p>Most AI governance frameworks converge on a similar model: providers self-assess, sometimes supported by pre-deployment evaluations from an external party. This memo argues that pre-deployment evaluation is not sufficient — the more consequential gap is at the <strong>output layer</strong>, where a model's response becomes an action or decision that affects someone. Drawing on two years of building and deploying a third-party auditing system for a values-sensitive domain, I argue for a specific, narrow expansion of what independent auditors should be able to observe and, in some cases, block.</p>
+  </div>
+
+  <div class="memo">
+
+    <h2>The problem with evaluation-only oversight</h2>
+    <p>Current AI governance is dominated by what I'll call the <span class="term">evaluation paradigm</span>: run a model against a benchmark or red-team suite before deployment, get a score, decide whether to ship. This is true whether the evaluator is the lab itself, a government body, or an independent auditor under something like the EU AI Act's conformity assessment regime.</p>
+    <p>Evaluation-only oversight has a structural weakness that's well understood in security engineering but underdiscussed in AI governance: <strong>a model that passes evaluation on Monday is not the same model in production on Tuesday.</strong> Fine-tuning, prompt injection, adversarial drift, RAG pipeline changes, and simple distribution shift in real user queries all mean the evaluated artifact and the deployed behavior diverge over time. This is why financial auditing, food safety, and industrial safety regimes all pair pre-approval with <strong>continuous, in-production monitoring</strong> — and why AI governance, still largely stuck at the pre-approval stage, is under-built by comparison.</p>
+    <p>The EU AI Act gestures at this with its post-market monitoring requirements (Articles 9, 17, and related provisions), but the mechanics of what a monitor actually observes, and what authority it has when it observes a violation, remain vague in practice. Most "monitoring" solutions in the market today are statistical drift detectors — they tell you <em>that</em> something changed, not <em>whether the output itself was admissible</em>. That distinction matters more than it might first appear.</p>
+
+    <hr class="sec-rule">
+
+    <h2>Two different questions, wrongly treated as one</h2>
+    <p>There are two separable questions that current governance tooling collapses into one:</p>
+    <ol>
+      <li><strong>Did the model change in a way that's statistically unusual?</strong> (drift detection)</li>
+      <li><strong>Was this specific output allowed to happen, given the constraints of the domain it was deployed into?</strong> (admissibility)</li>
+    </ol>
+    <p>Drift detection is necessary but domain-agnostic — a Population Stability Index shift tells you the input or output distribution moved, not whether the new distribution is <em>permissible</em>. Admissibility is domain-specific and requires an explicit, checkable rule set: this output violates a regulatory constraint, a safety constraint, or — in the domain I work in — a cultural or religious constraint that a purely statistical system has no way to encode.</p>
+
+    <div class="cite-block">
+      The more urgent governance gap is admissibility, not drift — because <strong>admissibility failures are the ones that actually cause harm.</strong> A model can drift wildly in benign directions and drift very little while still producing a single output that causes serious harm. Drift monitoring alone would miss the second case entirely.
+    </div>
+
+    <hr class="sec-rule">
+
+    <h2>A working example: output admissibility in a constrained domain</h2>
+    <p>For the last two years I've built and operated a production system — MaqasidAI/MACI — that performs exactly this kind of output-level admissibility checking, in a domain chosen specifically because it has hard, well-documented rules that most general-purpose AI systems get wrong: Islamic financial and religious content. The domain was useful precisely because it forces the tooling to be concrete rather than aspirational. "Don't be harmful" is not implementable; "flag any output attributing a specific ruling to a scholar or school of jurisprudence that did not issue it" is.</p>
+    <p>The system works in five layers: a fine-tuned multilingual classifier flags candidate violations across eight categories (fabricated religious rulings, misattributed scholarly opinions, financial structures resembling prohibited interest-bearing instruments, and others); a retrieval layer checks flagged outputs against an indexed corpus of verified source rulings; a madhab-aware (jurisprudential-school-aware) policy layer resolves cases where the "correct" answer depends on which tradition is asking; and every decision produces a cryptographically hashed, replayable audit receipt — so a regulator, a client, or an internal reviewer can reconstruct exactly why an output was allowed or blocked, after the fact.</p>
+
+    <div class="annotation">
+      <strong>Note on scope:</strong> None of this is exotic engineering. It's a fairly standard classify-retrieve-verify pipeline. What makes it a governance-relevant example rather than just an applied ML project is the design decision at its center: the system does not just describe what happened (explainability); it makes a binding decision about whether the output was allowed to proceed (admissibility), and that decision is auditable independently of the model that produced the output.
+    </div>
+
+    <p>This maps onto a distinction I think AI governance needs more of: the difference between a model <em>explaining itself</em> and a model being <em>governed by something outside itself</em>. Explainability tools (SHAP, LIME, counterfactual explanations) answer "why did the model do this" — valuable for debugging and for building trust, but they don't answer "was the model allowed to do this," and they don't stop it from happening again. An admissibility layer sits at the boundary between model output and real-world consequence, and it can say no.</p>
+
+    <hr class="sec-rule">
+
+    <h2>Why this generalizes beyond one domain</h2>
+    <p>I want to be careful not to overclaim from a single deployed system in a narrow vertical. But the architecture generalizes in a fairly mechanical way, and I think that's the more important claim than any specific result from my own system:</p>
+    <ul>
+      <li><strong>Any domain with an explicit, checkable rule set can be given an admissibility layer.</strong> Financial services (regtech-style compliance rules), healthcare (contraindication and scope-of-practice rules), and legal services (jurisdiction-specific citation and privilege rules) all have the same shape: a corpus of authoritative source material, a set of categorizable violation types, and a need for the decision to be replayable for audit purposes.</li>
+      <li><strong>The auditor does not need to see the model's weights or training data to do this.</strong> It needs to see the output, have an authoritative reference corpus, and have the authority to gate the output before it reaches the end user. This is a much lower access bar than most "AI auditing" proposals assume, which tend to imagine auditors needing deep model access. A well-scoped output-admissibility auditor can operate as a genuinely external, adversarial-to-the-provider party without ever touching proprietary model internals.</li>
+      <li><strong>It produces exactly the kind of artifact regulators are already asking for.</strong> The EU AI Act's emphasis on logging, traceability, and post-market monitoring (Articles 9, 12, 17) is a closer match to "replayable admissibility receipts" than it is to "aggregate drift statistics" — even though most compliance tooling on the market today is built around the latter because it's easier to build generically.</li>
+    </ul>
+
+    <hr class="sec-rule">
+
+    <h2>What this implies for AI governance research and policy</h2>
+    <p>If the argument above is right, there are a few concrete implications worth pursuing further:</p>
+    <ol>
+      <li><strong>What is the minimum viable access an independent output-auditor needs, across domains, to do meaningful admissibility checking without requiring provider cooperation at the model-internals level?</strong> This is a tractable empirical question, not just a policy preference — it can be answered by building and testing auditors against real deployed systems, which is exactly the kind of work I want to keep doing.</li>
+      <li><strong>How should "admissibility" be standardized across domains so that auditors aren't reinventing bespoke rule systems for every vertical?</strong> There's a reusable interface-design problem here: a general contract for what an admissibility layer takes as input (output, domain context, authoritative reference) and returns as output (bind / refuse / halt, with a receipt), regardless of the domain-specific rules underneath it. I've done initial work on exactly this kind of contract in a multi-party pilot — three independently built systems talking to each other through a shared schema — and the lesson so far is that the interface problem is more tractable than the domain-rules problem, which is encouraging for standardization efforts.</li>
+      <li><strong>Where should legal authority for "halt" actually sit?</strong> A technically capable admissibility auditor is not automatically a legally empowered one. This is squarely a governance and policy question, not a technical one — and it's the piece I'm least equipped to answer alone. It's exactly the kind of question that requires working with people who spend their time on regulatory design rather than model architecture.</li>
+    </ol>
+
+    <hr class="sec-rule">
+
+    <h2>Why I'm writing this</h2>
+    <p>I've spent the last two years building the technical side of this argument in one domain because I think domain-specific, deployed, auditable systems are more useful evidence for AI governance debates than general position papers — including this one. But the technical work alone doesn't answer the harder governance question of where auditing authority should sit, how it should be standardized across domains, or how regulators should think about the tradeoff between auditor independence and provider cooperation. That's the research I want to do next, and it's why a governance-focused research position, rather than a purely technical one, is the right next step for this work.</p>
+
+  </div><!-- end .memo -->
+
+  <!-- Share / cite strip -->
+  <div class="share-strip">
+    <p>Cite or share this memo</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <a href="mailto:hello@strataforge3.com?subject=Re:%20Output%20Admissibility%20Memo">Contact the author ↗</a>
+      <a href="eu-ai-act.html">EU AI Act page →</a>
+      <a href="sentinel.html">Sentinel methodology →</a>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <a href="eu-ai-act.html">← EU AI Act compliance page</a>
+    <a href="sentinel.html">Sentinel methodology →</a>
+  </div>
+
+</div>
+
+<footer>
+  <div class="fi">
+    <div class="fm">
+      <svg viewBox="0 0 100 100" fill="none">
+        <defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF8A3D"/><stop offset="100%" stop-color="#C2342A"/></linearGradient></defs>
+        <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="url(#fg)"/>
+        <polygon points="50,28 68,39 68,61 50,72 32,61 32,39" fill="#14153E"/>
+      </svg>
+      <span class="wm">STRATA<em>FORGE3</em></span>
+    </div>
+    <div class="fl">
+      <a href="index.html">Home</a>
+      <a href="sentinel.html">Sentinel</a>
+      <a href="eu-ai-act.html">EU AI Act</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
