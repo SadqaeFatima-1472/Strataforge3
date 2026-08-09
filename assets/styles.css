@@ -1,4 +1,32 @@
 /* ============================================
+   AMBIENT BACKGROUND — decorative, out of flow.
+   Paste this into assets/styles.css (top of file is fine).
+   These elements must NEVER affect document layout/height —
+   that's what was pushing the nav/hero down the page.
+   ============================================ */
+
+.ambient-nodes,
+.ambient-hex{
+  position: fixed;
+  top: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.ambient-hex{
+  width: 620px;
+  height: 620px;
+  max-width: 45vw;
+}
+
+.ambient-nodes{
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================
    NAV — final consolidated block.
    DELETE every other .nav / .nav-dropdown / .nav-links /
    .nav-mark / .nav-cta / .nav-toggle / .mobile-cta-link
