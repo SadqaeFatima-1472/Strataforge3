@@ -41,6 +41,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // Research dropdown
     const dropdownBtn = container.querySelector('.nav-dropdown-toggle');
     const dropdown = container.querySelector('.nav-dropdown');
+
+    function closeDropdown() {
+      if (!dropdown) return;
+      dropdown.classList.remove('open');
+      if (dropdownBtn) dropdownBtn.setAttribute('aria-expanded', 'false');
+    }
+
     if (dropdownBtn && dropdown) {
       dropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -49,23 +56,21 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    // Close dropdown on outside click or Escape
-    document.addEventListener('click', function () {
-      if (dropdown) {
-        dropdown.classList.remove('open');
-        if (dropdownBtn) dropdownBtn.setAttribute('aria-expanded', 'false');
-      }
-    });
+    document.addEventListener('click', closeDropdown);
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && dropdown) {
-        dropdown.classList.remove('open');
-        if (dropdownBtn) dropdownBtn.setAttribute('aria-expanded', 'false');
-      }
+      if (e.key === 'Escape') closeDropdown();
     });
 
     // Mobile hamburger toggle
     const navToggle = container.querySelector('.nav-toggle');
     const navLinks = container.querySelector('.nav-links');
+
+    function closeMobileMenu() {
+      if (!navLinks || !navToggle) return;
+      navLinks.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    }
+
     if (navToggle && navLinks) {
       navToggle.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -73,13 +78,21 @@ document.addEventListener('DOMContentLoaded', function () {
         navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       });
 
-      // Close mobile menu after clicking a nav link (not the dropdown toggle itself)
-      navLinks.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-          navLinks.classList.remove('open');
-          navToggle.setAttribute('aria-expanded', 'false');
-        });
+      // Close mobile menu after clicking a plain nav link
+      navLinks.querySelectorAll(':scope > a').forEach(link => {
+        link.addEventListener('click', closeMobileMenu);
+      });
+      // Close mobile menu after clicking a dropdown item too
+      navLinks.querySelectorAll('.nav-dropdown-menu a').forEach(link => {
+        link.addEventListener('click', closeMobileMenu);
       });
     }
+
+    // Reset stuck open states if the window is resized past the mobile breakpoint
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 860) {
+        closeMobileMenu();
+      }
+    });
   }
 });
