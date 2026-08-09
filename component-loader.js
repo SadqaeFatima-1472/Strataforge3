@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-
   // 1. Load Navigation Header
   const navPlaceholder = document.getElementById('nav-placeholder');
   if (navPlaceholder) {
@@ -41,13 +40,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // Research dropdown
     const dropdownBtn = container.querySelector('.nav-dropdown-toggle');
     const dropdown = container.querySelector('.nav-dropdown');
-
     function closeDropdown() {
       if (!dropdown) return;
       dropdown.classList.remove('open');
       if (dropdownBtn) dropdownBtn.setAttribute('aria-expanded', 'false');
     }
-
     if (dropdownBtn && dropdown) {
       dropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -55,7 +52,6 @@ document.addEventListener('DOMContentLoaded', function () {
         dropdownBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       });
     }
-
     document.addEventListener('click', closeDropdown);
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') closeDropdown();
@@ -64,20 +60,17 @@ document.addEventListener('DOMContentLoaded', function () {
     // Mobile hamburger toggle
     const navToggle = container.querySelector('.nav-toggle');
     const navLinks = container.querySelector('.nav-links');
-
     function closeMobileMenu() {
       if (!navLinks || !navToggle) return;
       navLinks.classList.remove('open');
       navToggle.setAttribute('aria-expanded', 'false');
     }
-
     if (navToggle && navLinks) {
       navToggle.addEventListener('click', function (e) {
         e.stopPropagation();
         const isOpen = navLinks.classList.toggle('open');
         navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       });
-
       // Close mobile menu after clicking a plain nav link
       navLinks.querySelectorAll(':scope > a').forEach(link => {
         link.addEventListener('click', closeMobileMenu);
