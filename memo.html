@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>What Third-Party AI Auditors Should Be Allowed to See — and Enforce</title>
 <meta name="description" content="A memo arguing for a specific, narrow expansion of what independent AI auditors should be able to observe and block — at the output layer, not just pre-deployment. By Syeda Beenish Fatima.">
+<link rel="stylesheet" href="assets/styles.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -93,21 +94,8 @@ h1{font-family:var(--serif);font-size:clamp(1.8rem,4vw,2.7rem);line-height:1.1;m
   padding:5px 12px;border-radius:5px;transition:background .15s;}
 .share-strip a:hover{background:rgba(255,138,61,0.08);}
 
-footer{border-top:1px solid var(--border);padding:32px 32px;position:relative;z-index:1;}
-.fi{max-width:720px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
-.fm{display:flex;align-items:center;gap:8px;}
-.fm svg{width:18px;height:18px;}
-.wm{font-family:var(--serif);font-weight:700;font-size:13px;}
-.wm em{font-style:normal;color:var(--orange);}
-.fl{display:flex;gap:18px;}
-.fl a{font-size:12.5px;color:var(--dim);transition:color .15s;}
-.fl a:hover{color:var(--text);}
-
 @media(max-width:640px){
-  nav{padding:0 16px;}
-  .nav-links{display:none;}
   .page{padding:2rem 16px 4rem;}
-  footer{padding:24px 16px;}
 }
 </style>
 </head>
@@ -211,10 +199,8 @@ footer{border-top:1px solid var(--border);padding:32px 32px;position:relative;z-
 
 </div>
 
-<footer>
-     <div id="footer-placeholder"></div>
-     <script src="assets/component-loader.js"></script>
-</footer>
+<div id="footer-placeholder"></div>
+<script src="assets/component-loader.js"></script>
 
 </body>
 </html>
