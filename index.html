@@ -3,87 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Strataforge — AI Production Risk Audit</title>
-<link rel="stylesheet" href="assets/styles.css">
-
-<style>
-/* ── Page-Specific Custom Components ── */
-
-/* Problem Section Statistics */
-.problem-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 64px; align-items: start; }
-.problem-grid p { color: var(--text-secondary, #9A9DA3); font-size: 16.5px; line-height: 1.75; margin-bottom: 18px; }
-.stat-list { display: flex; flex-direction: column; gap: 0; }
-.stat-row { display: flex; justify-content: space-between; align-items: baseline; padding: 18px 0; border-bottom: 1px solid var(--panel-border-soft, #20222A); }
-.stat-row:first-child { padding-top: 0; }
-.stat-row .stat-num { font-family: var(--mono, monospace); font-size: 26px; font-weight: 500; color: var(--orange-hi, #FFB627); flex-shrink: 0; }
-.stat-row .stat-desc { font-size: 13.5px; color: var(--text-tertiary, #6B6E76); text-align: right; max-width: 280px; line-height: 1.5; }
-
-/* Risk Scoring Table */
-.scoring-wrap { background: var(--navy-deep, #14161B); border: 1px solid var(--panel-border-soft, #20222A); border-radius: 14px; padding: 40px; }
-.scoring-formula { font-family: var(--mono, monospace); font-size: 15px; color: var(--text-secondary, #9A9DA3); background: var(--bg-card, #1A1C22); border: 1px solid var(--border, #2C2F38); border-radius: 8px; padding: 16px 20px; margin-bottom: 32px; display: inline-block; }
-.scoring-formula b { color: var(--orange-hi, #FFB627); font-weight: 500; }
-table.score-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-table.score-table th { text-align: left; font-size: 11.5px; font-weight: 500; color: var(--text-tertiary, #6B6E76); text-transform: uppercase; letter-spacing: 0.04em; padding: 0 0 14px; border-bottom: 1px solid var(--border, #2C2F38); }
-table.score-table td { padding: 16px 0; border-bottom: 1px solid var(--panel-border-soft, #20222A); font-size: 14.5px; vertical-align: top; }
-table.score-table td:first-child { width: 130px; }
-
-.bucket-pill { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12.5px; font-weight: 500; font-family: var(--mono, monospace); }
-.bucket-critical { background: #2A1A14; color: #F0997B; border: 1px solid #4A2A1C; }
-.bucket-high { background: #2A2114; color: #EF9F27; border: 1px solid #4A3A1C; }
-.bucket-watch { background: #1C1E24; color: #B4B2A9; border: 1px solid #2C2F38; }
-.score-range { font-family: var(--mono, monospace); color: var(--text-secondary, #9A9DA3); font-size: 13.5px; }
-
-/* Demo Report Frame */
-.demo-frame { background: var(--navy-deep, #14161B); border: 1px solid var(--panel-border-soft, #20222A); border-radius: 14px; overflow: hidden; }
-.demo-titlebar { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--panel-border-soft, #20222A); background: var(--bg-card, #1A1C22); }
-.demo-titlebar .tl-left span { font-family: var(--mono, monospace); font-size: 12.5px; color: var(--text-tertiary, #6B6E76); }
-.demo-titlebar .tl-tag { font-family: var(--mono, monospace); font-size: 11px; color: var(--text-tertiary, #6B6E76); border: 1px solid var(--border, #2C2F38); padding: 3px 9px; border-radius: 5px; }
-.demo-body { padding: 32px; }
-.demo-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--panel-border-soft, #20222A); border: 1px solid var(--panel-border-soft, #20222A); border-radius: 10px; overflow: hidden; margin-bottom: 32px; }
-.demo-summary div { background: var(--bg-card, #1A1C22); padding: 18px 20px; }
-.demo-summary .num { font-family: var(--mono, monospace); font-size: 24px; font-weight: 500; }
-.demo-summary .lbl { font-size: 12px; color: var(--text-tertiary, #6B6E76); margin-top: 4px; }
-.demo-summary .num.c { color: #F0997B; }
-.demo-summary .num.h { color: #EF9F27; }
-.demo-summary .num.w { color: #B4B2A9; }
-
-.finding { border: 1px solid var(--panel-border-soft, #20222A); border-radius: 10px; padding: 22px 24px; margin-bottom: 14px; background: var(--bg-card, #1A1C22); }
-.finding:last-child { margin-bottom: 0; }
-.finding-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 10px; flex-wrap: wrap; }
-.finding-head h4 { font-size: 15.5px; font-weight: 600; letter-spacing: -0.1px; }
-.finding-tags { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
-.finding-score { font-family: var(--mono, monospace); font-size: 12px; color: var(--text-tertiary, #6B6E76); }
-.finding p { font-size: 14px; color: var(--text-secondary, #9A9DA3); line-height: 1.65; }
-.finding .surface-tag { font-family: var(--mono, monospace); font-size: 11px; color: var(--text-tertiary, #6B6E76); margin-bottom: 10px; display: block; }
-.finding .fix { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--panel-border-soft, #20222A); font-size: 13px; color: var(--text-tertiary, #6B6E76); }
-.finding .fix b { color: var(--text-secondary, #9A9DA3); font-weight: 500; }
-
-/* Process List */
-.process-list { counter-reset: step; }
-.process-item { display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 28px 0; border-bottom: 1px solid var(--panel-border-soft, #20222A); }
-.process-item:first-child { padding-top: 0; }
-.process-item:last-child { border-bottom: none; padding-bottom: 0; }
-.process-num { font-family: var(--mono, monospace); font-size: 13px; color: var(--orange-hi, #FFB627); border: 1px solid var(--border, #2C2F38); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #22242C; }
-.process-item h4 { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
-.process-item .days { font-family: var(--mono, monospace); font-size: 12px; color: var(--text-tertiary, #6B6E76); margin-left: 10px; font-weight: 400; }
-.process-item p { color: var(--text-secondary, #9A9DA3); font-size: 14.5px; line-height: 1.65; }
-
-/* Pricing Card */
-.price-card { background: var(--navy-deep, #14161B); border: 1px solid var(--panel-border-soft, #20222A); border-radius: 14px; padding: 44px; display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center; }
-.price-left h3 { font-size: 22px; font-weight: 600; margin-bottom: 12px; }
-.price-left p { color: var(--text-secondary, #9A9DA3); font-size: 15px; line-height: 1.65; max-width: 440px; }
-.price-right { text-align: right; }
-.price-amount { font-family: var(--mono, monospace); font-size: 38px; font-weight: 500; color: var(--text-primary, #F5F4F1); white-space: nowrap; }
-.price-amount span { font-size: 16px; color: var(--text-tertiary, #6B6E76); font-weight: 400; }
-.price-note { font-size: 12.5px; color: var(--text-tertiary, #6B6E76); margin-top: 6px; }
-
-@media (max-width: 860px) {
-  .problem-grid { grid-template-columns: 1fr; gap: 40px; }
-  .demo-summary { grid-template-columns: repeat(2, 1fr); }
-  .price-card { grid-template-columns: 1fr; text-align: left; }
-  .price-right { text-align: left; }
-}
-</style>
+<title>Strataforge3 — Engineered for Production</title>
+<meta name="description" content="A fixed two-week audit that finds the hidden risk in your AI systems before a customer, auditor, or board member does.">
+<link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 
@@ -96,20 +18,33 @@ table.score-table td:first-child { width: 130px; }
   </defs>
 </svg>
 
-<!-- Header dynamic placeholder -->
+<div class="ambient-nodes"></div>
+<svg class="ambient-hex" viewBox="0 0 620 620" fill="none">
+  <polygon points="520,40 580,75 580,145 520,180 460,145 460,75" fill="url(#markGrad)" opacity="0.85"/>
+  <polygon points="430,90 480,118 480,176 430,204 380,176 380,118" fill="url(#markGrad)" opacity="0.55"/>
+  <polygon points="540,170 600,205 600,275 540,310 480,275 480,205" fill="url(#markGrad)" opacity="0.7"/>
+  <polygon points="450,230 500,258 500,316 450,344 400,316 400,258" fill="url(#markGrad)" opacity="0.4"/>
+  <g stroke="#9B9DC7" stroke-width="0.6" opacity="0.18">
+    <line x1="520" y1="110" x2="430" y2="150"/>
+    <line x1="430" y1="150" x2="540" y2="240"/>
+    <line x1="540" y1="240" x2="450" y2="280"/>
+    <line x1="520" y1="110" x2="540" y2="240"/>
+  </g>
+</svg>
+
 <div id="nav-placeholder"></div>
 
 <main>
-  <section class="hero">
+  <section class="page-hero">
     <div class="wrap">
       <div class="eyebrow"><span class="dot"></span>AI PRODUCTION RISK AUDIT</div>
-      <h1>Find out what's actually<br>broken in your AI systems<br><span class="accent">before a customer does.</span></h1>
-      <p class="hero-sub">A fixed two-week audit of the AI features you've shipped — scored, ranked, and written for the person who has to act on the findings, not the person who already understands the system.</p>
+      <h1>Find out what's actually broken in your AI systems —<br><span class="accent">before a customer does.</span></h1>
+      <p class="page-sub">A fixed two-week audit of the AI features you've shipped — scored, ranked, and written for the person who has to act on the findings, not the person who already understands the system.</p>
       <div class="hero-row">
-        <button class="btn-primary" onclick="window.location.href='contact.html'">Book an audit</button>
-        <span class="btn-ghost" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">See a sample report ↓</span>
+        <button class="btn-primary" onclick="window.location.href='audit-offer.html'">See the audit offer</button>
+        <span class="btn-ghost" onclick="window.location.href='pricing.html'">View pricing →</span>
       </div>
-      <div class="stat-strip" style="margin-top: 56px;">
+      <div class="stat-strip">
         <div><div class="num">2 weeks</div><div class="label">fixed engagement length</div></div>
         <div><div class="num">4</div><div class="label">risk surfaces scored</div></div>
         <div><div class="num">1 doc</div><div class="label">ranked findings, no slideware</div></div>
@@ -121,18 +56,10 @@ table.score-table td:first-child { width: 130px; }
 
   <section>
     <div class="wrap">
-      <div class="problem-grid">
-        <div>
-          <span class="kicker">THE PROBLEM</span>
-          <h2 style="margin-bottom:22px;">Most AI features shipped in the last 18 months were never actually audited.</h2>
-          <p>They were built fast, by a small team, against a deadline. Nobody went back afterward and asked what happens when the data source changes, when usage spikes, or when the model gets something confidently wrong in front of a customer.</p>
-          <p>That gap doesn't show up in a demo. It shows up in a security questionnaire you can't answer, a board member asking if the AI is safe, or an outage with no clear owner.</p>
-        </div>
-        <div class="stat-list">
-          <div class="stat-row"><span class="stat-num">95%</span><span class="stat-desc">of enterprise AI pilots fail to deliver measurable value — a failure of selection, not technology</span></div>
-          <div class="stat-row"><span class="stat-num">30–40%</span><span class="stat-desc">of change budgets wasted on rework at organizations carrying heavy AI technical debt</span></div>
-          <div class="stat-row"><span class="stat-num">70–85%</span><span class="stat-desc">of AI initiatives fail to hit their target outcomes due to brittle architecture</span></div>
-        </div>
+      <div class="section-head">
+        <span class="kicker">THE PROBLEM</span>
+        <h2>Most AI features shipped in the last 18 months were never actually audited.</h2>
+        <p>They were built fast, by a small team, against a deadline. Nobody went back afterward and asked what happens when the data source changes, when usage spikes, or when the model gets something confidently wrong in front of a customer. That gap doesn't show up in a demo — it shows up in a security questionnaire you can't answer, or an outage with no clear owner.</p>
       </div>
     </div>
   </section>
@@ -179,147 +106,17 @@ table.score-table td:first-child { width: 130px; }
 
   <section>
     <div class="wrap">
-      <div class="section-head">
-        <span class="kicker">SCORING</span>
-        <h2>Every finding ranked the same way.</h2>
-        <p>Severity and likelihood, scored independently, so a fix gets prioritized by business impact — not by which problem happens to be the most interesting technically.</p>
+      <div class="section-head" style="margin-bottom:32px;">
+        <span class="kicker">ABOUT</span>
+        <h2>Built by someone who's shipped production AI compliance systems, not just talked about them.</h2>
       </div>
-      <div class="scoring-wrap">
-        <div class="scoring-formula">risk score = <b>severity</b> (1–5) × <b>likelihood</b> (1–5)</div>
-        <table class="score-table">
-          <thead><tr><th>Score range</th><th>Bucket</th><th>Response window</th></tr></thead>
-          <tbody>
-            <tr><td><span class="score-range">15 – 25</span></td><td><span class="bucket-pill bucket-critical">Critical</span></td><td>Fix before next release</td></tr>
-            <tr><td><span class="score-range">8 – 14</span></td><td><span class="bucket-pill bucket-high">High</span></td><td>Fix within one quarter</td></tr>
-            <tr><td><span class="score-range">1 – 7</span></td><td><span class="bucket-pill bucket-watch">Watch</span></td><td>Track, revisit at next audit</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <hr class="divider">
-
-  <section id="demo">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="kicker">SAMPLE OUTPUT</span>
-        <h2>What the report actually looks like.</h2>
-        <p>A synthetic example, run against a typical AI support-ticket assistant. Real engagements follow this exact structure — ranked findings, business impact first, technical detail second.</p>
-      </div>
-      <div class="demo-frame">
-        <div class="demo-titlebar">
-          <div class="tl-left"><span>sample-audit-support-assistant.report</span></div>
-          <span class="tl-tag">SYNTHETIC EXAMPLE</span>
-        </div>
-        <div class="demo-body">
-          <div class="demo-summary">
-            <div><div class="num c">2</div><div class="lbl">critical findings</div></div>
-            <div><div class="num h">2</div><div class="lbl">high findings</div></div>
-            <div><div class="num w">1</div><div class="lbl">watch findings</div></div>
-            <div><div class="num">14 days</div><div class="lbl">audit length</div></div>
-          </div>
-
-          <div class="finding">
-            <div class="finding-head">
-              <h4>Standing read access to the full customer table</h4>
-              <div class="finding-tags"><span class="finding-score">5 × 4 = 20</span><span class="bucket-pill bucket-critical">Critical</span></div>
-            </div>
-            <span class="surface-tag">DATA EXPOSURE</span>
-            <p>The support assistant has unrestricted read access to the customer database, not just the fields it needs to answer tickets. Access was never scoped down after the prototype stage, and no one currently owns reviewing it.</p>
-            <div class="fix"><b>Recommended fix:</b> Scope the service account to a read-only view of ticket-relevant fields; add quarterly access review.</div>
-          </div>
-
-          <div class="finding">
-            <div class="finding-head">
-              <h4>No rollback path for prompt changes</h4>
-              <div class="finding-tags"><span class="finding-score">4 × 4 = 16</span><span class="bucket-pill bucket-critical">Critical</span></div>
-            </div>
-            <span class="surface-tag">OPERATIONAL READINESS</span>
-            <p>A prompt update that degraded answer quality was live for nine days before anyone noticed — there was no versioning or fast revert path, and no monitoring flagged the drop in resolution rate.</p>
-            <div class="fix"><b>Recommended fix:</b> Version prompts in source control; add a same-day rollback path and a weekly resolution-rate check.</div>
-          </div>
-
-          <div class="finding">
-            <div class="finding-head">
-              <h4>Single undocumented retrieval script</h4>
-              <div class="finding-tags"><span class="finding-score">3 × 4 = 12</span><span class="bucket-pill bucket-high">High</span></div>
-            </div>
-            <span class="surface-tag">ARCHITECTURE BRITTLENESS</span>
-            <p>The entire retrieval pipeline depends on one script written by a former contractor. No one currently on the team has modified it or could explain several of its assumptions.</p>
-            <div class="fix"><b>Recommended fix:</b> Document the script's logic and dependencies; assign a current owner before any further changes.</div>
-          </div>
-
-          <div class="finding">
-            <div class="finding-head">
-              <h4>No measured error rate on generated responses</h4>
-              <div class="finding-tags"><span class="finding-score">4 × 3 = 12</span><span class="bucket-pill bucket-high">High</span></div>
-            </div>
-            <span class="surface-tag">OUTPUT RELIABILITY</span>
-            <p>Generated responses reach customers with no human review step and no logged accuracy rate. The team learned about a wrong pricing answer from a customer complaint, not from monitoring.</p>
-            <div class="fix"><b>Recommended fix:</b> Sample and score 5% of responses weekly; route low-confidence answers to human review.</div>
-          </div>
-
-          <div class="finding">
-            <div class="finding-head">
-              <h4>Cost scales unpredictably under load</h4>
-              <div class="finding-tags"><span class="finding-score">2 × 3 = 6</span><span class="bucket-pill bucket-watch">Watch</span></div>
-            </div>
-            <span class="surface-tag">OPERATIONAL READINESS</span>
-            <p>Per-ticket model cost is not currently tracked or capped, so a spike in ticket volume would translate directly into an unbudgeted cost spike with no early warning.</p>
-            <div class="fix"><b>Recommended fix:</b> Add per-day cost tracking and an alert threshold; revisit at next audit.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <hr class="divider">
-
-  <section>
-    <div class="wrap">
-      <div class="section-head">
-        <span class="kicker">HOW IT RUNS</span>
-        <h2>Two weeks. One report. No retainer.</h2>
-      </div>
-      <div class="process-list">
-        <div class="process-item">
-          <div class="process-num">1</div>
-          <div>
-            <h4>Intake<span class="days">DAYS 1–2</span></h4>
-            <p>A structured questionnaire, access to architecture docs and the repo, and one technical interview with the team that built the system.</p>
-          </div>
-        </div>
-        <div class="process-item">
-          <div class="process-num">2</div>
-          <div>
-            <h4>Audit<span class="days">DAYS 3–9</span></h4>
-            <p>Each of the four risk surfaces is reviewed and every finding scored independently on severity and likelihood.</p>
-          </div>
-        </div>
-        <div class="process-item">
-          <div class="process-num">3</div>
-          <div>
-            <h4>Report &amp; debrief<span class="days">DAYS 10–14</span></h4>
-            <p>A ranked findings document, plus a 60–90 minute walkthrough call to go through what matters most and what to fix first.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <hr class="divider">
-
-  <section id="book">
-    <div class="wrap">
-      <div class="price-card">
-        <div class="price-left">
-          <h3>AI Production Risk Audit</h3>
-          <p>Fixed scope, fixed price. The price depends on system complexity — one AI feature versus several integrated pipelines — confirmed after a short intake call, never after the work has started.</p>
-        </div>
-        <div class="price-right">
-          <div class="price-amount">$8,000<span> – $15,000</span></div>
-          <div class="price-note">two-week engagement, fixed fee</div>
+      <div class="panel bio-grid" style="padding:36px;">
+        <div class="bio-avatar">SF</div>
+        <div>
+          <h3>Syeda Beenish Fatima</h3>
+          <span class="bio-role">FOUNDER, STRATAFORGE3</span>
+          <p>Beenish founded MaqasidAI and built MACI (Maqasid AI Compliance Index), a production-grade Shariah compliance signal layer used in Islamic finance and other values-sensitive institutional contexts. MACI runs as a live system — fine-tuned classification, a fiqh ruling retrieval index, a deployed API and demo — covering eight violation classes across five madhabs and six languages.</p>
+          <p>Strataforge3 applies that same standard — systems that hold up under real production load and real scrutiny, not just a demo — to a different problem: finding the hidden risk in AI systems that were shipped fast and never formally audited.</p>
         </div>
       </div>
     </div>
@@ -334,7 +131,6 @@ table.score-table td:first-child { width: 130px; }
   </section>
 </main>
 
-<!-- Footer dynamic placeholder -->
 <div id="footer-placeholder"></div>
 
 <script src="component-loader.js"></script>
