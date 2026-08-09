@@ -1,11 +1,14 @@
 /* ============================================
-   NAV — consolidated (replaces every other nav
-   rule in the stylesheet — do not keep duplicates)
+   NAV — final consolidated block.
+   DELETE every other .nav / .nav-dropdown / .nav-links /
+   .nav-mark / .nav-cta / .nav-toggle / .mobile-cta-link
+   rule anywhere else in the stylesheet before pasting this.
+   Duplicates are the #1 cause of this exact bug.
    ============================================ */
 
 nav{
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(20,21,62,0.82);
+  position: sticky; top: 0; z-index: 1000;
+  background: rgba(20,21,62,0.95);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--panel-border-soft);
 }
@@ -15,7 +18,7 @@ nav .wrap{
 }
 
 /* Logo / wordmark */
-.nav-mark{ display:flex; align-items:center; gap:12px; flex-shrink:0; }
+.nav-mark{ display:flex; align-items:center; gap:12px; flex-shrink:0; text-decoration:none; }
 .nav-mark svg,
 .nav-mark .nav-logo-img{
   width:32px; height:32px; flex-shrink:0; object-fit:contain; display:block;
@@ -56,19 +59,35 @@ nav .wrap{
 .nav-dropdown-toggle{
   background:none; border:none; cursor:pointer; font-family:var(--sans);
   font-size:14px; font-weight:500; color:var(--text-secondary);
-  display:inline-flex; align-items:center; gap:6px; padding:0; transition:color .15s;
+  display:inline-flex; align-items:center; gap:6px; padding:4px 0; transition:color .15s;
 }
 .nav-dropdown-toggle:hover, .nav-dropdown-toggle.active{ color:var(--text-primary); }
-.nav-dropdown-toggle svg{ stroke:currentColor; transition: transform .15s; }
+.nav-dropdown-toggle svg{ stroke:currentColor; transition: transform .15s ease; transform-origin:center; }
 .nav-dropdown.open .nav-dropdown-toggle svg{ transform: rotate(180deg); }
 
+/* This is the rule that was failing to apply on your live site.
+   !important guarantees nothing else in the cascade can silently
+   re-enable it, even a leftover duplicate you missed deleting. */
 .nav-dropdown-menu{
-  display:none; /* JS toggles this open via .nav-dropdown.open */
+  display:none !important;
   position:absolute; top:calc(100% + 16px); left:50%; transform:translateX(-50%);
   min-width:220px; background:var(--panel-raised); border:1px solid var(--panel-border-soft);
-  border-radius:10px; padding:8px; box-shadow:0 16px 32px rgba(0,0,0,0.35); z-index:110;
+  border-radius:10px; padding:8px; box-shadow:0 16px 32px rgba(0,0,0,0.35); z-index:1001;
 }
-.nav-dropdown.open .nav-dropdown-menu{ display:block; }
+
+/* Invisible bridge — keeps the menu open while the cursor crosses
+   the 16px gap between the toggle and the panel on hover */
+.nav-dropdown-menu::before{
+  content:""; position:absolute; top:-16px; left:0; right:0; height:16px;
+}
+
+/* Opens on hover (desktop) or .open class (click / keyboard, both sizes) */
+@media (min-width: 861px){
+  .nav-dropdown:hover .nav-dropdown-menu{ display:block !important; }
+  .nav-dropdown:hover .nav-dropdown-toggle svg{ transform: rotate(180deg); }
+}
+.nav-dropdown.open .nav-dropdown-menu{ display:block !important; }
+
 .nav-dropdown-menu a{
   display:block; padding:9px 12px; border-radius:6px; font-size:13.5px;
   color:var(--text-secondary); transition:background .15s, color .15s; white-space:nowrap;
@@ -87,7 +106,7 @@ nav .wrap{
     position:fixed; top:70px; left:0; right:0; background:var(--navy-deep);
     flex-direction:column; align-items:flex-start; padding:24px 20px; gap:20px;
     border-bottom:1px solid var(--panel-border-soft);
-    transform:translateY(-130%); transition:transform .25s ease; z-index:90;
+    transform:translateY(-130%); transition:transform .25s ease; z-index:999;
     box-shadow:0 12px 24px rgba(0,0,0,0.3);
   }
   .nav-links.open{ transform:translateY(0); }
@@ -111,8 +130,9 @@ nav .wrap{
   .nav-dropdown-toggle{ width:100%; justify-content:space-between; font-size:14.5px; }
   .nav-dropdown-menu{
     position:static; transform:none; box-shadow:none; border:none; background:none;
-    padding:4px 0 4px 14px; margin-top:6px; margin-left: 0;
+    padding:4px 0 4px 14px; margin-top:6px; margin-left:0;
     border-left:1px solid var(--panel-border-soft);
-    min-width: 0; width: 100%;
+    min-width:0; width:100%;
   }
+  .nav-dropdown-menu::before{ display:none; }
 }
