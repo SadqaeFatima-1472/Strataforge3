@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Case Study: Silent Fraud Model Failure — Strataforge Sentinel</title>
+<title>Recall Decay Detection: Silent Fraud Model Failure — Strataforge Sentinel</title>
 <meta name="description" content="284,807 transactions. 29-point recall drop. Caught before it became a loss event. How Sentinel detected silent production model failure on the ULB Credit Card Fraud dataset.">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
@@ -44,7 +44,11 @@ h1{font-family:var(--serif);font-size:clamp(1.9rem,4.5vw,3rem);line-height:1.1;m
 .meta-item span{color:var(--muted);}
 .verified-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(20,184,169,0.07);
   border:1px solid rgba(20,184,169,0.2);padding:.3rem .8rem;border-radius:4px;
-  font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--teal);margin-bottom:1.6rem;}
+  font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--teal);margin-bottom:.6rem;}
+.research-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(98,112,240,0.07);
+  border:1px solid rgba(98,112,240,0.2);padding:.3rem .8rem;border-radius:4px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.02em;color:#8490FF;margin-bottom:1.6rem;line-height:1.6;max-width:640px;}
+.research-badge em{font-style:normal;color:var(--orange2);}
 
 /* Summary strip */
 .summary-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
@@ -160,6 +164,7 @@ h3{font-family:var(--sans);font-size:1.05rem;font-weight:600;margin-bottom:.5rem
 /* Methodology note */
 .method-note{font-family:var(--mono);font-size:11px;color:var(--dim);line-height:1.65;
   border-top:1px solid var(--border);padding-top:1.2rem;margin-top:1rem;}
+.byline{font-family:var(--mono);font-size:11px;color:rgba(220,218,240,0.4);margin-top:.7rem;}
 
 @media(max-width:640px){
   .page{padding:2.5rem 16px 4rem;}
@@ -177,7 +182,7 @@ h3{font-family:var(--sans);font-size:1.05rem;font-weight:600;margin-bottom:.5rem
 <div class="page">
 
   <!-- Header -->
-  <p class="case-label">Case Study · Credit Card Fraud Detection</p>
+  <p class="case-label">Case Study 1 · Recall Decay Detection (ULB)</p>
   <h1>Detecting Silent Model Failure in a Production Fraud Detector</h1>
 
   <div class="case-meta">
@@ -189,6 +194,9 @@ h3{font-family:var(--sans);font-size:1.05rem;font-weight:600;margin-bottom:.5rem
 
   <div class="verified-badge">
     ✓ Fully reproducible · Public dataset · Every number below is independently verifiable
+  </div>
+  <div class="research-badge">
+    ◈ Methodology detailed in a manuscript under peer review — <em>"Lightweight Model Monitoring Framework for Production Fraud Detection Systems: A Statistical Approach with Business-Aware Optimization"</em> — submitted to Wiley (MLOps)
   </div>
 
   <!-- Summary strip -->
@@ -215,6 +223,7 @@ h3{font-family:var(--sans);font-size:1.05rem;font-weight:600;margin-bottom:.5rem
   <span class="sec-label">The setup</span>
   <h2>A strong model. Trained, validated, deployed. Then what?</h2>
   <p class="body">We trained a fraud classifier on the ULB Credit Card Fraud dataset — 284,807 transactions, only 492 of them fraud. This is a standard, widely-used benchmark, which matters here: it means every number below can be independently checked by anyone who downloads the same public dataset.</p>
+  <p class="body">The monitoring layer applied here follows a business-aware threshold-optimization approach — cost-sensitivity analysis rather than a fixed default cutoff — which is the core contribution of the methodology paper referenced above.</p>
   <p class="body">After feature engineering — 9 engineered features added to the original 28 PCA components (rolling stats, interaction terms, log-transformed amount) for 38 features total — and a 40-trial Optuna search optimizing for PR-AUC, the final model scored:</p>
 
   <div class="reload-grid" style="margin-bottom:1.4rem;">
@@ -400,7 +409,8 @@ h3{font-family:var(--sans);font-size:1.05rem;font-weight:600;margin-bottom:.5rem
 
   <div class="callout note">
     <div class="callout-label">Methodology note</div>
-    <p>This evaluation uses the public ULB Credit Card Fraud dataset and simulated production-drift periods constructed from held-out data, not live customer transactions. It demonstrates Sentinel's monitoring methodology on a fully reproducible, independently verifiable benchmark. A second case study using the larger IEEE-CIS Fraud Detection dataset (590,540 transactions) is in progress.</p>
+    <p>This evaluation uses the public ULB Credit Card Fraud dataset and simulated production-drift periods constructed from held-out data, not live customer transactions. It demonstrates Sentinel's monitoring methodology on a fully reproducible, independently verifiable benchmark. A second case study using the larger IEEE-CIS Fraud Detection dataset (590,540 transactions) tests the opposite failure mode — see <a href="case-study-ieee.html" style="color:var(--orange2);">Case Study 2: False-Alarm Resistance →</a></p>
+    <div class="byline">Methodology developed by Syeda Beenish Fatima</div>
   </div>
 
   <!-- CTA -->
