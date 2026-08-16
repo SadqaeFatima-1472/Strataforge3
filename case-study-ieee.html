@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Case Study 2: Model Stability on IEEE-CIS Fraud — Strataforge Sentinel</title>
+<title>False-Alarm Resistance: Model Stability on IEEE-CIS Fraud — Strataforge Sentinel</title>
 <meta name="description" content="590,540 transactions. 5 production periods. No false alarms. Sentinel's second case study validates the other half of what a monitoring system must prove.">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
@@ -15,7 +15,11 @@
 .case-label::before{content:'';width:18px;height:1px;background:var(--orange);}
 .verified-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(20,184,169,0.07);
   border:1px solid rgba(20,184,169,0.2);padding:.3rem .8rem;border-radius:4px;
-  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--teal,#14B8A9);margin-bottom:1.6rem;}
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--teal,#14B8A9);margin-bottom:.6rem;}
+.research-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(98,112,240,0.07);
+  border:1px solid rgba(98,112,240,0.2);padding:.3rem .8rem;border-radius:4px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.02em;color:#8490FF;margin-bottom:1.6rem;line-height:1.6;max-width:640px;}
+.research-badge em{font-style:normal;color:#FFB85C;}
 .case-meta{display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:.8rem;}
 .meta-item{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:rgba(220,218,240,0.28);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:5px;}
 .meta-item span{color:rgba(220,218,240,0.55);}
@@ -92,6 +96,7 @@
 .btn-pr{background:linear-gradient(135deg,#FF8A3D,#C2342A);color:#1A0E04;font-weight:700;font-size:14px;padding:12px 24px;border:none;cursor:pointer;border-radius:7px;font-family:inherit;}
 .btn-gh{background:transparent;color:#F6F5F2;border:1px solid rgba(246,245,242,0.15);font-size:14px;font-weight:500;padding:12px 22px;cursor:pointer;border-radius:7px;font-family:inherit;}
 .btn-gh:hover{border-color:#FF8A3D;}
+.byline{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(220,218,240,0.4);margin-top:.7rem;}
 
 footer{border-top:1px solid rgba(90,100,220,0.18);padding:36px 32px;position:relative;z-index:1;}
 .fi{max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
@@ -140,10 +145,10 @@ footer{border-top:1px solid rgba(90,100,220,0.18);padding:36px 32px;position:rel
 
   <!-- Case Study 1 link -->
   <div style="display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:rgba(220,218,240,0.38);margin-bottom:1.2rem;border:1px solid rgba(90,100,220,0.18);padding:.35rem .8rem;border-radius:4px;">
-    ← <a href="case-study-fraud.html" style="color:#FFB85C;">Case Study 1: ULB Credit Card Fraud</a> · This is Case Study 2
+    ← <a href="case-study-fraud.html" style="color:#FFB85C;">Case Study 1: Recall Decay Detection (ULB)</a> · This is Case Study 2
   </div>
 
-  <p class="case-label">Case Study 2 · IEEE-CIS Fraud Detection</p>
+  <p class="case-label">Case Study 2 · False-Alarm Resistance (IEEE-CIS)</p>
   <h1 style="font-family:'Playfair Display',serif;font-size:clamp(1.9rem,4.5vw,3rem);line-height:1.1;margin-bottom:1rem;">Validating Model Stability<br>on a Harder, Higher-Volume<br>Fraud Dataset</h1>
 
   <div class="case-meta">
@@ -154,6 +159,9 @@ footer{border-top:1px solid rgba(90,100,220,0.18);padding:36px 32px;position:rel
   </div>
 
   <div class="verified-badge">✓ Public dataset · Reproducible · Independently verifiable</div>
+  <div class="research-badge">
+    ◈ Methodology detailed in a manuscript under peer review — <em>"Lightweight Model Monitoring Framework for Production Fraud Detection Systems: A Statistical Approach with Business-Aware Optimization"</em> — submitted to Wiley (MLOps)
+  </div>
 
   <div class="sum-strip">
     <div class="sum-cell"><div class="sum-num" style="color:#14B8A9;">0.888</div><div class="sum-lbl">ROC-AUC (harder dataset)</div></div>
@@ -171,6 +179,7 @@ footer{border-top:1px solid rgba(90,100,220,0.18);padding:36px 32px;position:rel
   <div class="callout insight">
     <div class="callout-label">◈ The two-sided test</div>
     <p>Case Study 1 proved Sentinel catches a real failure. <strong>Case Study 2 proves Sentinel doesn't manufacture false alarms.</strong> You need both to trust a monitoring system. A system that fires on everything is as useless as one that fires on nothing.</p>
+    <p style="margin-top:.6rem;">This dual-outcome design — one model degrading, correctly flagged; one model holding steady, correctly left alone — mirrors the evaluation approach used in the underlying research above: a monitoring method is only credible if it's validated against both a true failure and a true negative, not just one favorable dataset.</p>
   </div>
 
   <hr style="border:none;border-top:1px solid rgba(90,100,220,0.18);margin:2rem 0;">
@@ -276,14 +285,14 @@ footer{border-top:1px solid rgba(90,100,220,0.18);padding:36px 32px;position:rel
 
   <div class="contrast">
     <div class="contrast-cell case1">
-      <div class="contrast-head">🔴 Case Study 1 — ULB Credit Card</div>
+      <div class="contrast-head">🔴 Case Study 1 — Recall Decay Detection (ULB)</div>
       <div class="contrast-item"><span style="color:#EF4444;flex-shrink:0">✕</span> Recall: 88.9% → 60.0% (−29 pts)</div>
       <div class="contrast-item"><span style="color:#EF4444;flex-shrink:0">✕</span> PSI climbed 5× on Amount_log</div>
       <div class="contrast-item"><span style="color:#EF4444;flex-shrink:0">✕</span> RECALL_ALERT fired at Period 5</div>
       <div class="contrast-item"><span style="color:#14B8A9;flex-shrink:0">✓</span> Sentinel caught it correctly</div>
     </div>
     <div class="contrast-cell case2">
-      <div class="contrast-head">✅ Case Study 2 — IEEE-CIS</div>
+      <div class="contrast-head">✅ Case Study 2 — False-Alarm Resistance (IEEE-CIS)</div>
       <div class="contrast-item"><span style="color:#14B8A9;flex-shrink:0">✓</span> Recall: 65.3–72.5% (stable band)</div>
       <div class="contrast-item"><span style="color:#14B8A9;flex-shrink:0">✓</span> PSI stayed within safe range</div>
       <div class="contrast-item"><span style="color:#14B8A9;flex-shrink:0">✓</span> No alerts — 5/5 periods healthy</div>
@@ -291,11 +300,12 @@ footer{border-top:1px solid rgba(90,100,220,0.18);padding:36px 32px;position:rel
     </div>
   </div>
 
-  <p class="body">Together, these two studies apply the same monitoring methodology to two different outcomes: <strong>one model degrading, correctly flagged; one model holding steady, correctly left alone.</strong> That's the minimum viable test of whether a monitoring system is actually measuring something real rather than generating noise.</p>
+  <p class="body">Together, these two studies apply the same monitoring methodology — described in the Wiley submission referenced above — to two different outcomes: <strong>one model degrading, correctly flagged; one model holding steady, correctly left alone.</strong> That's the minimum viable test of whether a monitoring system is actually measuring something real rather than generating noise.</p>
 
   <div class="callout note">
     <div class="callout-label">Methodology note</div>
     <p>This evaluation uses the public IEEE-CIS Fraud Detection dataset and simulated production-drift periods constructed from held-out test data, not live customer transactions. Alert thresholds (60% recall floor) are set per-model based on validated baseline performance, not a fixed universal number.</p>
+    <div class="byline">Methodology developed by Syeda Beenish Fatima</div>
   </div>
 
   <div class="bottom-cta">
