@@ -100,6 +100,32 @@
 .form-success h4 { font-family:var(--serif, serif); font-size:1.3rem; margin-bottom:.45rem; }
 .form-success p  { font-size:13.5px; color:var(--text-secondary, rgba(220,218,240,0.55)); line-height:1.65; }
 
+/* Free Drift Health Check tool */
+.tool-panel { background:var(--navy-deep, #14153E); border:1px solid var(--panel-border-soft, rgba(90,100,220,0.18)); margin-top:1.6rem; padding:1.8rem; border-top:2px solid var(--teal, #14B8A9); }
+.tool-badge { display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--teal, #14B8A9); background:rgba(20,184,169,0.08); border:1px solid rgba(20,184,169,0.25); padding:3px 9px; margin-bottom:1rem; }
+.dropzone { border:1.5px dashed rgba(90,100,220,0.35); background:var(--bg2, #1B1C4C); padding:2.2rem 1.5rem; text-align:center; cursor:pointer; transition:border-color .2s, background .2s; margin-top:1rem; }
+.dropzone:hover, .dropzone.dragover { border-color:var(--teal, #14B8A9); background:rgba(20,184,169,0.04); }
+.dropzone .dz-icon { font-size:1.8rem; margin-bottom:.5rem; }
+.dropzone .dz-main { font-size:14px; font-weight:600; margin-bottom:.3rem; }
+.dropzone .dz-sub { font-size:12px; color:var(--text-secondary, rgba(220,218,240,0.55)); line-height:1.6; }
+.tool-controls { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-top:1.4rem; }
+.tool-controls .form-row label { display:flex; justify-content:space-between; }
+.tool-controls input[type="range"] { width:100%; accent-color:var(--teal, #14B8A9); }
+.tool-note { font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--text-secondary, rgba(220,218,240,0.4)); margin-top:1.1rem; display:flex; align-items:center; gap:6px; }
+.tool-results { margin-top:1.6rem; display:none; }
+.tool-results.show { display:block; }
+.result-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1px; background:var(--panel-border-soft, rgba(90,100,220,0.18)); border:1px solid var(--panel-border-soft, rgba(90,100,220,0.18)); margin-top:1rem; }
+.result-cell { background:var(--bg2, #1B1C4C); padding:1.1rem 1.2rem; }
+.result-cell .rlabel { font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-secondary, rgba(220,218,240,0.5)); margin-bottom:.4rem; }
+.result-cell .rval { font-size:1.4rem; font-weight:600; }
+.result-cell .rval.ok { color:var(--teal, #14B8A9); }
+.result-cell .rval.warn { color:var(--orange2, #FFB85C); }
+.result-cell .rval.bad { color:#EF4444; }
+.feature-list { margin-top:1rem; }
+.feature-row { display:flex; justify-content:space-between; align-items:center; padding:.5rem 0; border-bottom:1px solid var(--panel-border-soft, rgba(90,100,220,0.12)); font-size:12.5px; }
+.feature-row .fname { color:var(--text-primary, #F6F5F2); }
+.feature-row .fpsi { font-family:'JetBrains Mono',monospace; }
+
 @media (max-width: 640px) {
   .ba { grid-template-columns:1fr; }
   .layer-grid,.diff-grid { grid-template-columns:1fr; }
@@ -128,7 +154,7 @@
       <h1>Know your model<br>still <span class="accent">works.</span></h1>
       <div class="tagline" style="font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--teal, #14B8A9); margin-bottom:1.6rem; padding:.45rem 0; border-top:1px solid rgba(20,184,169,0.2); border-bottom:1px solid rgba(20,184,169,0.2); max-width:520px;">AI Observability for Production Systems · Detect · Explain · Govern</div>
       <p class="page-sub" style="max-width: 620px;">Production AI models degrade quietly after deployment. Strataforge Sentinel gives you continuous observability into the model itself — not just your infrastructure — optimizes against your actual business cost, and produces the governance documentation your regulators require.</p>
-      
+
       <div class="hero-row" style="margin-bottom: 2rem;">
         <button class="btn-primary" onclick="openModal()">Get a custom quote →</button>
         <a href="contact.html" class="btn-ghost" style="border-color: var(--teal, #14B8A9); color: var(--teal, #14B8A9);">Book a scoping call ↗</a>
@@ -138,6 +164,53 @@
         <div><div class="num">Live</div><div class="label">System validated on real production model</div></div>
         <div><div class="num">5–7d</div><div class="label">Days to your audit report</div></div>
         <div><div class="num">11+</div><div class="label">IEEE / Springer / Wiley publications</div></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- Free Drift Health Check Tool -->
+  <section id="free-tool" class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker" style="color:var(--teal, #14B8A9);">FREE TOOL · NO LOGIN REQUIRED</span>
+        <h2>Free AI Drift Health Check</h2>
+        <p>Upload your model's prediction data and get an instant Sentinel observability scan — drift score, recall trend, top unstable features, and threshold recommendation.</p>
+      </div>
+
+      <div class="tool-panel">
+        <span class="tool-badge">⚡ Runs entirely in your browser · No data uploaded to any server · Results generated locally</span>
+
+        <div class="dropzone" id="dropzone" onclick="document.getElementById('csvInput').click()">
+          <div class="dz-icon">📊</div>
+          <div class="dz-main">Drop your prediction CSV here</div>
+          <div class="dz-sub">Needs at least: <code>prediction_score</code> or <code>y_pred</code> (0/1), and optionally <code>y_true</code>, feature columns<br>Works with any model — fraud, credit, churn, LLM scoring</div>
+          <div class="dz-sub" style="margin-top:.5rem;">Accepts: .csv · Max 10MB · Browser-only processing</div>
+          <input type="file" id="csvInput" accept=".csv" style="display:none" onchange="handleFile(this.files[0])">
+        </div>
+
+        <div class="tool-controls">
+          <div class="form-row">
+            <label>Production periods to simulate <span id="periodsVal">5</span></label>
+            <input type="range" id="periodsRange" min="2" max="10" value="5" oninput="document.getElementById('periodsVal').textContent=this.value">
+          </div>
+          <div class="form-row">
+            <label>PSI alert threshold <span id="psiVal">0.25</span></label>
+            <input type="range" id="psiRange" min="0.05" max="0.5" step="0.01" value="0.25" oninput="document.getElementById('psiVal').textContent=this.value">
+          </div>
+          <div class="form-row">
+            <label>Cost per missed fraud ($) <span id="costVal">100</span></label>
+            <input type="range" id="costRange" min="10" max="1000" step="10" value="100" oninput="document.getElementById('costVal').textContent=this.value">
+          </div>
+        </div>
+
+        <div class="tool-note">🔒 No data is uploaded to any server · All computation happens locally in your browser</div>
+
+        <div class="tool-results" id="toolResults">
+          <div class="result-grid" id="resultGrid"></div>
+          <div class="feature-list" id="featureList"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -184,11 +257,11 @@
           <div class="layer-tag govern">Sentinel Govern</div>
           <h3>Governance &amp; Regulatory Compliance</h3>
           <div class="layer-tagline govern">The documentation trail before the auditor calls.</div>
-          <p>Translates objectives into measurable MLOps metrics. Produces audit-ready documentation for EU AI Act Articles 9–17, DORA, and Shariah governance standards.</p>
+          <p>Translates objectives into measurable MLOps metrics. Produces audit-ready documentation for EU AI Act Articles 9–17 and DORA.</p>
           <ul class="layer-features">
             <li><span style="color:#E8B020;flex-shrink:0">✓</span> EU AI Act Articles 9–17 documentation package</li>
             <li><span style="color:#E8B020;flex-shrink:0">✓</span> DORA-aligned audit trail and logging</li>
-            <li><span style="color:#E8B020;flex-shrink:0">✓</span> Shariah compliance scoring</li>
+            <li><span style="color:#E8B020;flex-shrink:0">✓</span> Model risk management (SR 11-7 style) documentation</li>
             <li><span style="color:#E8B020;flex-shrink:0">✓</span> Risk management system documentation</li>
             <li><span style="color:#E8B020;flex-shrink:0">✓</span> Regulatory-ready technical records</li>
           </ul>
@@ -230,14 +303,14 @@
           <p>Sentinel produces the executive summary and regulatory mapping your compliance team and board actually need.</p>
         </div>
         <div class="diff-card">
-          <div class="vs-them">Zero governance layer for regulated finance</div>
-          <div class="vs-us">Shariah-aware governance built in</div>
-          <p>Governance layer aligned with Islamic finance principles for GCC and South Asian institutions.</p>
+          <div class="vs-them">Retrained blind, redeployed blind</div>
+          <div class="vs-us">Full lifecycle drift history</div>
+          <p>Every retrain and redeploy is logged against prior performance, so you can see exactly when and why a model's behavior shifted.</p>
         </div>
         <div class="diff-card">
           <div class="vs-them">Built for Silicon Valley, sold everywhere</div>
-          <div class="vs-us">Built for global fintech constraints</div>
-          <p>Designed for real technical constraints real teams operate under globally — then proven to scale.</p>
+          <div class="vs-us">Built for real production constraints</div>
+          <p>Designed for the technical constraints real ML teams operate under globally — then proven to scale.</p>
         </div>
       </div>
     </div>
@@ -320,7 +393,7 @@
               <option value="">Select…</option>
               <option>Head of Risk / CRO</option><option>CTO / VP Engineering</option>
               <option>Head of Data Science</option><option>Compliance / Audit</option>
-              <option>Fraud Analytics Lead</option><option>Chief Sharia Officer</option><option>Other</option>
+              <option>Fraud Analytics Lead</option><option>MLOps / Platform Lead</option><option>Other</option>
             </select>
           </div>
         </div>
@@ -328,7 +401,8 @@
           <select id="f-model">
             <option value="">Select…</option>
             <option>Fraud detection (XGBoost / LightGBM)</option><option>Credit scoring</option>
-            <option>AML / transaction monitoring</option><option>Islamic finance risk model</option><option>Custom / other</option>
+            <option>AML / transaction monitoring</option><option>Churn / propensity model</option>
+            <option>LLM scoring / classification</option><option>Custom / other</option>
           </select>
         </div>
         <div class="form-row"><label>Anything else we should know?</label>
@@ -375,6 +449,141 @@ function submitQuote(){
 }
 
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+/* ── Free Drift Health Check — all client-side, no network calls ── */
+const dz = document.getElementById('dropzone');
+['dragover','dragleave','drop'].forEach(evt=>{
+  dz.addEventListener(evt, e=>{
+    e.preventDefault();
+    if(evt==='dragover') dz.classList.add('dragover');
+    if(evt==='dragleave') dz.classList.remove('dragover');
+    if(evt==='drop'){ dz.classList.remove('dragover'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); }
+  });
+});
+
+function parseCSV(text){
+  const lines = text.trim().split(/\r?\n/);
+  const headers = lines[0].split(',').map(h=>h.trim());
+  const rows = lines.slice(1).map(line=>{
+    const cells = line.split(',');
+    const row = {};
+    headers.forEach((h,i)=> row[h] = cells[i] !== undefined ? cells[i].trim() : '');
+    return row;
+  });
+  return { headers, rows };
+}
+
+function psi(expected, actual, buckets=10){
+  const sorted = [...expected].sort((a,b)=>a-b);
+  const breakpoints = [];
+  for(let i=0;i<=buckets;i++){
+    const idx = Math.min(sorted.length-1, Math.floor(i/buckets*sorted.length));
+    breakpoints.push(sorted[idx]);
+  }
+  breakpoints[0] = -Infinity; breakpoints[buckets] = Infinity;
+  function bucketCounts(arr){
+    const counts = new Array(buckets).fill(0);
+    arr.forEach(v=>{
+      for(let b=0;b<buckets;b++){
+        if(v > breakpoints[b] && v <= breakpoints[b+1]){ counts[b]++; break; }
+      }
+    });
+    return counts.map(c=> Math.max(c/arr.length, 1e-6));
+  }
+  const e = bucketCounts(expected), a = bucketCounts(actual);
+  let total = 0;
+  for(let i=0;i<buckets;i++) total += (a[i]-e[i]) * Math.log(a[i]/e[i]);
+  return total;
+}
+
+function handleFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      const { headers, rows } = parseCSV(e.target.result);
+      runDriftCheck(headers, rows);
+    }catch(err){
+      alert('Could not parse this CSV. Please check the format and try again.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function runDriftCheck(headers, rows){
+  const scoreCol = headers.find(h => /prediction_score|y_pred|score/i.test(h));
+  const truthCol = headers.find(h => /y_true|label|actual/i.test(h));
+  if(!scoreCol){ alert('No prediction_score / y_pred column found.'); return; }
+
+  const periods = parseInt(document.getElementById('periodsRange').value, 10);
+  const psiThresh = parseFloat(document.getElementById('psiRange').value);
+  const fnCost = parseFloat(document.getElementById('costRange').value);
+
+  const scores = rows.map(r => parseFloat(r[scoreCol])).filter(v=>!isNaN(v));
+  const truths = truthCol ? rows.map(r => parseFloat(r[truthCol])).filter(v=>!isNaN(v)) : null;
+
+  const featureCols = headers.filter(h => h!==scoreCol && h!==truthCol && !isNaN(parseFloat(rows[0]?.[h])));
+  const chunkSize = Math.floor(scores.length / periods) || 1;
+  const baseline = scores.slice(0, chunkSize);
+  let worstPsi = 0, lastRecall = null, firstRecall = null;
+
+  for(let p=0;p<periods;p++){
+    const chunk = scores.slice(p*chunkSize, (p+1)*chunkSize);
+    if(chunk.length < 2) continue;
+    const chunkPsi = psi(baseline, chunk);
+    if(chunkPsi > worstPsi) worstPsi = chunkPsi;
+    if(truths){
+      const tChunk = truths.slice(p*chunkSize, (p+1)*chunkSize);
+      const preds = chunk.map(s => s >= 0.5 ? 1 : 0);
+      let tp=0, fn=0;
+      for(let i=0;i<tChunk.length;i++){ if(tChunk[i]===1){ if(preds[i]===1) tp++; else fn++; } }
+      const recall = (tp+fn) > 0 ? tp/(tp+fn) : null;
+      if(firstRecall===null) firstRecall = recall;
+      lastRecall = recall;
+    }
+  }
+
+  // threshold sweep (cost-aware) if truth available
+  let bestThresh = 0.5;
+  if(truths){
+    let bestCost = Infinity;
+    for(let t=0.05; t<0.95; t+=0.05){
+      let fn=0, fp=0;
+      for(let i=0;i<scores.length;i++){
+        const pred = scores[i] >= t ? 1 : 0;
+        if(truths[i]===1 && pred===0) fn++;
+        if(truths[i]===0 && pred===1) fp++;
+      }
+      const cost = fn*fnCost + fp*5;
+      if(cost < bestCost){ bestCost = cost; bestThresh = t; }
+    }
+  }
+
+  const featurePsi = featureCols.map(f=>{
+    const vals = rows.map(r=>parseFloat(r[f])).filter(v=>!isNaN(v));
+    const base = vals.slice(0, chunkSize);
+    const recent = vals.slice(-chunkSize);
+    return { name: f, psi: (base.length>1 && recent.length>1) ? psi(base, recent) : 0 };
+  }).sort((a,b)=>b.psi-a.psi).slice(0,5);
+
+  const driftLevel = worstPsi >= psiThresh ? 'bad' : worstPsi >= psiThresh*0.6 ? 'warn' : 'ok';
+  const recallLevel = lastRecall===null ? 'ok' : lastRecall < 0.6 ? 'bad' : lastRecall < 0.75 ? 'warn' : 'ok';
+
+  document.getElementById('resultGrid').innerHTML = `
+    <div class="result-cell"><div class="rlabel">Max PSI drift score</div><div class="rval ${driftLevel}">${worstPsi.toFixed(3)}</div></div>
+    <div class="result-cell"><div class="rlabel">Recall trend</div><div class="rval ${recallLevel}">${lastRecall===null?'n/a (no y_true)':(lastRecall*100).toFixed(1)+'%'}</div></div>
+    <div class="result-cell"><div class="rlabel">Recommended threshold</div><div class="rval ok">${bestThresh.toFixed(2)}</div></div>
+    <div class="result-cell"><div class="rlabel">Rows analyzed</div><div class="rval ok">${scores.length.toLocaleString()}</div></div>
+  `;
+
+  document.getElementById('featureList').innerHTML = '<div class="rlabel" style="margin-bottom:.5rem">Top unstable features (PSI, baseline vs. most recent period)</div>' +
+    featurePsi.map(f=>{
+      const lvl = f.psi >= psiThresh ? '#EF4444' : f.psi >= psiThresh*0.6 ? '#FFB85C' : '#14B8A9';
+      return `<div class="feature-row"><span class="fname">${f.name}</span><span class="fpsi" style="color:${lvl}">${f.psi.toFixed(3)}</span></div>`;
+    }).join('');
+
+  document.getElementById('toolResults').classList.add('show');
+}
 </script>
 </body>
 </html>
