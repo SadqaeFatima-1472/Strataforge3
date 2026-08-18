@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free AI Drift Health Check — Strataforge Sentinel</title>
-<meta name="description" content="Upload your model's prediction CSV and get an instant drift health check. Free. No login required.">
+<meta name="description" content="Upload your model's prediction CSV and see in under a minute whether it's already started drifting. Free. No login required.">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -155,8 +155,8 @@ h1 em{font-style:italic;color:var(--orange2);}
 
 <div class="page">
   <p class="eyebrow">Free tool · No login required</p>
-  <h1>Free AI Drift<br><em>Health Check</em></h1>
-  <p class="sub">Upload your model's prediction data and get an instant Sentinel observability scan — drift score, recall trend, top unstable features, and threshold recommendation.</p>
+  <h1>Is your model still<br><em>working?</em></h1>
+  <p class="sub">Every scoring model — fraud, credit, claims, churn — quietly drifts after it's deployed. Upload the predictions it's already made and see exactly where yours has started slipping, before it shows up as losses.</p>
   <p class="disclaimer">⚡ Runs entirely in your browser · No data is uploaded to any server · Results generated locally</p>
 
   <!-- Upload -->
@@ -164,7 +164,7 @@ h1 em{font-style:italic;color:var(--orange2);}
     <input type="file" id="fileInput" accept=".csv" onchange="handleFile(event)">
     <div class="upload-icon">📊</div>
     <h3>Drop your prediction CSV here</h3>
-    <p>Needs at least: <strong>prediction_score</strong> or <strong>y_pred</strong> (0/1), and optionally <strong>y_true</strong>, feature columns<br>Works with any model — fraud, credit, churn, LLM scoring</p>
+    <p>Needs at least: <strong>prediction_score</strong> or <strong>y_pred</strong> (0/1), and optionally <strong>y_true</strong>, feature columns<br>Works with any scoring model — fraud, credit, churn, claims, LLM classification</p>
     <div class="formats">Accepts: .csv · Max 10MB · Browser-only processing</div>
   </div>
 
@@ -244,8 +244,8 @@ h1 em{font-style:italic;color:var(--orange2);}
 
     <!-- CTA -->
     <div class="results-cta">
-      <h3>This is the free Sentinel diagnostic.</h3>
-      <p>A full audit adds SHAP explainability, cost-aware threshold optimisation, EU AI Act documentation, and a debrief call — delivered in 5–7 days.</p>
+      <h3>This is the free, browser-only diagnostic.</h3>
+      <p>A full Sentinel engagement adds continuous monitoring (not a one-time snapshot), cost-aware threshold optimisation tuned to your numbers, a tamper-evident EU AI Act / DORA evidence trail, and a debrief call — live within days, not months.</p>
       <div class="cta-row">
         <button class="btn-primary" onclick="window.location.href='mailto:hello@strataforge3.com?subject=Sentinel%20Full%20Audit%20-%20Request&body=I%20ran%20the%20free%20drift%20check%20and%20would%20like%20a%20full%20audit.'">Request a full audit →</button>
         <button class="btn-ghost" onclick="window.location.href='sentinel.html'">See full pricing</button>
