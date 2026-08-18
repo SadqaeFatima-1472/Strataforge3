@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Strataforge Sentinel — Production AI Observability</title>
-<meta name="description" content="Continuous observability for production AI models. Detect silent failure, explain decisions, govern with confidence. Live API. Reports in 5–7 days.">
+<meta name="description" content="Know the moment your fraud, credit, or claims-scoring model starts making worse decisions — and hand your compliance team the paperwork before the regulator asks.">
 <link rel="stylesheet" href="assets/styles.css">
 
 <style>
@@ -30,6 +30,7 @@
 .layer-card p { font-size:13px; color:var(--text-secondary, rgba(220,218,240,0.55)); line-height:1.6; margin-bottom:.8rem; }
 .layer-features { list-style:none; }
 .layer-features li { font-size:12.5px; color:var(--text-secondary, rgba(220,218,240,0.55)); padding:.2rem 0; display:flex; align-items:flex-start; gap:6px; line-height:1.4; }
+.layer-badge-soon { font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:rgba(220,218,240,0.45); border:1px solid rgba(220,218,240,0.2); padding:1px 7px; border-radius:3px; margin-left:8px; vertical-align:middle; }
 
 /* Diffs & Before/After */
 .diff-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1px; background:var(--panel-border-soft, rgba(90,100,220,0.18)); border:1px solid var(--panel-border-soft, rgba(90,100,220,0.18)); margin-top:1.6rem; }
@@ -151,9 +152,9 @@
   <section class="hero" style="min-height: 85vh; display: flex; flex-direction: column; justify-content: center; padding: 4rem 20px; position: relative;">
     <div class="wrap" style="position: relative; z-index: 1;">
       <p class="eyebrow"><span class="dot"></span>Strataforge3 · Sentinel · Production AI Observability</p>
-      <h1>Know your model<br>still <span class="accent">works.</span></h1>
-      <div class="tagline" style="font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--teal, #14B8A9); margin-bottom:1.6rem; padding:.45rem 0; border-top:1px solid rgba(20,184,169,0.2); border-bottom:1px solid rgba(20,184,169,0.2); max-width:520px;">AI Observability for Production Systems · Detect · Explain · Govern</div>
-      <p class="page-sub" style="max-width: 620px;">Production AI models degrade quietly after deployment. Strataforge Sentinel gives you continuous observability into the model itself — not just your infrastructure — optimizes against your actual business cost, and produces the governance documentation your regulators require.</p>
+      <h1>Your model was accurate<br>on day one. <span class="accent">Is it still?</span></h1>
+      <div class="tagline" style="font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--teal, #14B8A9); margin-bottom:1.6rem; padding:.45rem 0; border-top:1px solid rgba(20,184,169,0.2); border-bottom:1px solid rgba(20,184,169,0.2); max-width:560px;">For fraud, credit, AML, insurance, churn, and content-moderation teams running scoring models</div>
+      <p class="page-sub" style="max-width: 620px;">Every model that outputs a score or a flag — a fraud check, a credit decision, a claim getting escalated, a customer marked as likely to churn — quietly gets worse after deployment as the world it was trained on shifts underneath it. Usually nobody notices until the losses show up in the numbers. Sentinel watches the model itself, tells you the moment its decisions start drifting off, and keeps the audit trail your compliance team needs ready before a regulator ever asks for it.</p>
 
       <div class="hero-row" style="margin-bottom: 2rem;">
         <button class="btn-primary" onclick="openModal()">Get a custom quote →</button>
@@ -175,8 +176,8 @@
     <div class="wrap">
       <div class="section-head">
         <span class="kicker" style="color:var(--teal, #14B8A9);">FREE TOOL · NO LOGIN REQUIRED</span>
-        <h2>Free AI Drift Health Check</h2>
-        <p>Upload your model's prediction data and get an instant Sentinel observability scan — drift score, recall trend, top unstable features, and threshold recommendation.</p>
+        <h2>See it on your own data before you talk to us</h2>
+        <p>Upload a CSV of your model's past predictions — no setup, nothing installed, nothing leaves your browser — and see in under a minute whether your model's behavior has already started shifting.</p>
       </div>
 
       <div class="tool-panel">
@@ -221,49 +222,45 @@
   <section class="section">
     <div class="wrap">
       <div class="section-head">
-        <span class="kicker">THE FULL PACKAGE</span>
-        <h2>Three layers. One system. Zero observability gaps.</h2>
-        <p>Strataforge Sentinel is not a drift detector. It is the AI observability and governance layer between your model deployment and your regulatory accountability — combining continuous model monitoring, explainability, and documentation into a single audit-ready package.</p>
+        <span class="kicker">HOW IT HELPS</span>
+        <h2>Know something's wrong before it costs you</h2>
+        <p>Two things happen the moment a scoring model starts drifting: the losses start compounding quietly, and — if you're regulated — you need to be able to show exactly what happened and when. Sentinel is built to catch the first and document the second, without adding infrastructure to your stack.</p>
       </div>
 
       <div class="layer-grid">
         <div class="layer-card">
           <div class="layer-tag detect">Sentinel Detect</div>
-          <h3>Continuous Model Observability</h3>
-          <div class="layer-tagline detect">Know before your losses do.</div>
-          <p>Always-on visibility into whether your production model is still behaving the way it did when it was approved — recall, precision, and feature-level signal health tracked across every production period, not just at deployment.</p>
+          <h3>Catch it before your losses do</h3>
+          <div class="layer-tagline detect">The fraud that got through. The applicant who shouldn't have qualified.</div>
+          <p>Sentinel continuously checks whether your model is still making the same kind of decisions it made when it was approved — not whether the server is up, whether the *decisions* are still right. When a feature's distribution shifts or recall starts slipping, you get an alert with the specific feature and the specific number, not a vague dashboard.</p>
           <ul class="layer-features">
-            <li><span style="color:#FFB85C;flex-shrink:0">✓</span> Recall, AUC, FPR decay timelines</li>
-            <li><span style="color:#FFB85C;flex-shrink:0">✓</span> Feature-level statistical drift signal (PSI + KS)</li>
-            <li><span style="color:#FFB85C;flex-shrink:0">✓</span> Cost-aware threshold optimization</li>
-            <li><span style="color:#FFB85C;flex-shrink:0">✓</span> Automated alert triggers on performance decay</li>
-            <li><span style="color:#FFB85C;flex-shrink:0">✓</span> Live model health, not just server uptime</li>
-          </ul>
-        </div>
-        <div class="layer-card">
-          <div class="layer-tag explain">Sentinel Explain</div>
-          <h3>Explainability &amp; Transparency</h3>
-          <div class="layer-tagline explain">A decision your regulator can read.</div>
-          <p>Transforms black-box AI models into interpretable decisions — the auditability that regulated environments require, not an afterthought bolted onto a dashboard.</p>
-          <ul class="layer-features">
-            <li><span style="color:#14B8A9;flex-shrink:0">✓</span> Feature attribution per decision</li>
-            <li><span style="color:#14B8A9;flex-shrink:0">✓</span> Counterfactual explanation generation</li>
-            <li><span style="color:#14B8A9;flex-shrink:0">✓</span> Glass-box reporting for compliance</li>
-            <li><span style="color:#14B8A9;flex-shrink:0">✓</span> Bias and fairness indicators</li>
-            <li><span style="color:#14B8A9;flex-shrink:0">✓</span> Plain-language executive summaries</li>
+            <li><span style="color:#FFB85C;flex-shrink:0">✓</span> Recall and feature-drift tracked every period, not just at deployment</li>
+            <li><span style="color:#FFB85C;flex-shrink:0">✓</span> Alerts on the specific feature that moved, with the number attached</li>
+            <li><span style="color:#FFB85C;flex-shrink:0">✓</span> Threshold recommendations weighted to your actual cost of a miss</li>
+            <li><span style="color:#FFB85C;flex-shrink:0">✓</span> One model or many — each one monitored independently, nothing shared</li>
           </ul>
         </div>
         <div class="layer-card">
           <div class="layer-tag govern">Sentinel Govern</div>
-          <h3>Governance &amp; Regulatory Compliance</h3>
-          <div class="layer-tagline govern">The documentation trail before the auditor calls.</div>
-          <p>Translates objectives into measurable MLOps metrics. Produces audit-ready documentation for EU AI Act Articles 9–17 and DORA.</p>
+          <h3>The paperwork, already done</h3>
+          <div class="layer-tagline govern">Answer the auditor in minutes, not a scramble.</div>
+          <p>Every drift check, every threshold change, every model deployment is written to a tamper-evident record and automatically mapped to the specific EU AI Act article or DORA requirement it serves as evidence for. When someone asks "prove your risk-management process is working," you pull a report — you don't reconstruct one from memory.</p>
           <ul class="layer-features">
-            <li><span style="color:#E8B020;flex-shrink:0">✓</span> EU AI Act Articles 9–17 documentation package</li>
-            <li><span style="color:#E8B020;flex-shrink:0">✓</span> DORA-aligned audit trail and logging</li>
-            <li><span style="color:#E8B020;flex-shrink:0">✓</span> Model risk management (SR 11-7 style) documentation</li>
-            <li><span style="color:#E8B020;flex-shrink:0">✓</span> Risk management system documentation</li>
-            <li><span style="color:#E8B020;flex-shrink:0">✓</span> Regulatory-ready technical records</li>
+            <li><span style="color:#E8B020;flex-shrink:0">✓</span> Evidence auto-mapped to EU AI Act Articles 9–17</li>
+            <li><span style="color:#E8B020;flex-shrink:0">✓</span> Tamper-evident audit trail — verifiable, not just claimed</li>
+            <li><span style="color:#E8B020;flex-shrink:0">✓</span> Survives infrastructure restarts — the record doesn't disappear</li>
+            <li><span style="color:#E8B020;flex-shrink:0">✓</span> Report generated on demand, scoped to any model or time window</li>
+          </ul>
+        </div>
+        <div class="layer-card">
+          <div class="layer-tag explain">Sentinel Explain <span class="layer-badge-soon">In development</span></div>
+          <h3>Why the model decided what it decided</h3>
+          <div class="layer-tagline explain">Turning "the model flagged it" into an answer you can give a customer.</div>
+          <p>Feature attribution, counterfactual explanations, and plain-language decision summaries — so when a customer or regulator asks why a specific decision was made, you have a real answer instead of a shrug. This layer is actively being built; ask us where it stands for your use case.</p>
+          <ul class="layer-features">
+            <li><span style="color:#14B8A9;flex-shrink:0">○</span> Feature attribution per decision</li>
+            <li><span style="color:#14B8A9;flex-shrink:0">○</span> Counterfactual explanation generation</li>
+            <li><span style="color:#14B8A9;flex-shrink:0">○</span> Plain-language decision summaries</li>
           </ul>
         </div>
       </div>
@@ -277,40 +274,40 @@
     <div class="wrap">
       <div class="section-head">
         <span class="kicker" style="color:var(--teal, #14B8A9);">WHAT'S DIFFERENT</span>
-        <h2>Why teams choose Sentinel over generic monitoring tools</h2>
-        <p>Most production ML monitoring tools were built to watch infrastructure — uptime, latency, throughput. Sentinel watches the model: whether its decisions are still correct.</p>
+        <h2>Built to answer "is the model still right," not "is the server up"</h2>
+        <p>Most monitoring tools were built for infrastructure — uptime, latency, throughput. None of that tells you whether the model's decisions are still correct. Sentinel watches the one thing that actually costs you money when it goes wrong.</p>
       </div>
 
       <div class="diff-grid">
         <div class="diff-card">
-          <div class="vs-them">Dashboards that watch your infrastructure</div>
-          <div class="vs-us">Observability for the model, not the server</div>
-          <p>Uptime monitors tell you the service is responding. They say nothing about whether the model's decisions are still correct.</p>
+          <div class="vs-them">"The service is responding" dashboards</div>
+          <div class="vs-us">Is the decision still right?</div>
+          <p>A model can return a 200 response and still be quietly wrong on every third fraud case. Sentinel watches the decisions, not the uptime.</p>
         </div>
         <div class="diff-card">
-          <div class="vs-them">Accuracy-only optimization</div>
-          <div class="vs-us">Cost-aware thresholding</div>
-          <p>A model can be "accurate" and still lose money if costs aren't weighted correctly. Sentinel optimizes against your actual business cost function.</p>
+          <div class="vs-them">One accuracy number for everyone</div>
+          <div class="vs-us">Weighted to what a miss actually costs you</div>
+          <p>A missed fraud case and a false decline don't cost the same. Sentinel's threshold recommendations are optimized against your real cost, not a generic accuracy score.</p>
         </div>
         <div class="diff-card">
-          <div class="vs-them">Enterprise infrastructure requirement</div>
-          <div class="vs-us">No Kubernetes. No platform lock-in.</div>
-          <p>Built for lean teams. Runs as a lightweight service — not a six-month infrastructure project before you see value.</p>
+          <div class="vs-them">A six-month infrastructure project</div>
+          <div class="vs-us">Send us your scores, get monitoring today</div>
+          <p>No Kubernetes, no platform migration. If your model already outputs a score, Sentinel can start watching it this week.</p>
         </div>
         <div class="diff-card">
-          <div class="vs-them">Charts nobody outside engineering reads</div>
-          <div class="vs-us">Audit-ready documentation, by design</div>
-          <p>Sentinel produces the executive summary and regulatory mapping your compliance team and board actually need.</p>
+          <div class="vs-them">Charts only your engineers open</div>
+          <div class="vs-us">A report your compliance team can hand over</div>
+          <p>Every check is written as evidence, mapped to the specific regulatory article it supports — built for the person who has to answer the auditor, not just the person who built the model.</p>
         </div>
         <div class="diff-card">
           <div class="vs-them">Retrained blind, redeployed blind</div>
-          <div class="vs-us">Full lifecycle drift history</div>
-          <p>Every retrain and redeploy is logged against prior performance, so you can see exactly when and why a model's behavior shifted.</p>
+          <div class="vs-us">A permanent record of every change</div>
+          <p>Every retrain, every threshold change, every redeploy is logged against what came before — so you can point to exactly when and why behavior shifted.</p>
         </div>
         <div class="diff-card">
-          <div class="vs-them">Built for Silicon Valley, sold everywhere</div>
-          <div class="vs-us">Built for real production constraints</div>
-          <p>Designed for the technical constraints real ML teams operate under globally — then proven to scale.</p>
+          <div class="vs-them">One model per account, take it or leave it</div>
+          <div class="vs-us">Every model kept fully separate</div>
+          <p>Your fraud model and a colleague's credit model — or two different customers' models — never share reference data, thresholds, or alerts. Verified, not assumed.</p>
         </div>
       </div>
     </div>
@@ -323,15 +320,15 @@
     <div class="wrap">
       <div class="section-head">
         <span class="kicker">THE PROBLEM</span>
-        <h2>What happens after deployment</h2>
-        <p>Data shifts. Patterns evolve. User behavior changes. The model's learned relationships break down — but without observability, nobody notices.</p>
+        <h2>What happens after deployment, quietly</h2>
+        <p>Whether it's transaction patterns shifting, applicant profiles changing, or customer behavior moving — the story is the same across fraud, credit, and claims models: the data your model sees stops looking like the data it was trained on, and nobody notices until it shows up as losses.</p>
       </div>
 
       <div class="timeline">
-        <div class="tl-item"><div class="tl-dot">P0</div><div class="tl-content"><h4>Deployment baseline</h4><p>Model trained and validated. Strong ROC-AUC on held-out test data.</p></div></div>
-        <div class="tl-item"><div class="tl-dot">P1–2</div><div class="tl-content"><h4>Performance begins shifting</h4><p>Underlying feature distributions move. Without observability, this signal is invisible.</p></div></div>
-        <div class="tl-item"><div class="tl-dot">P3–4</div><div class="tl-content"><h4>Degradation compounds</h4><p>Recall and precision begin moving in directions that look fine in aggregate but aren't.</p></div></div>
-        <div class="tl-item"><div class="tl-dot alert">P5</div><div class="tl-content"><span class="tag-alert">Alert fires</span><h4>Recall alert triggers</h4><p>Recall drops below the defined safety threshold. Sentinel fires the alert before losses compound.</p></div></div>
+        <div class="tl-item"><div class="tl-dot">P0</div><div class="tl-content"><h4>Deployment baseline</h4><p>Model trained and validated. Strong performance on held-out test data — the number everyone signs off on.</p></div></div>
+        <div class="tl-item"><div class="tl-dot">P1–2</div><div class="tl-content"><h4>Performance begins shifting</h4><p>The patterns underneath start moving. Without something watching for it, this is completely invisible.</p></div></div>
+        <div class="tl-item"><div class="tl-dot">P3–4</div><div class="tl-content"><h4>Degradation compounds</h4><p>Recall and precision drift in ways that still look fine in a monthly summary but aren't.</p></div></div>
+        <div class="tl-item"><div class="tl-dot alert">P5</div><div class="tl-content"><span class="tag-alert">Alert fires</span><h4>Sentinel catches it here</h4><p>Recall drops below your defined safety threshold. You get the alert — and the evidence record — before the losses compound further.</p></div></div>
       </div>
     </div>
   </section>
@@ -343,16 +340,16 @@
     <div class="wrap">
       <div class="section-head">
         <span class="kicker" style="color:var(--teal, #14B8A9);">API ACCESS</span>
-        <h2>Integrate Sentinel into your stack</h2>
-        <p>Run scoring, observability checks, explainability queries, and threshold diagnostics programmatically.</p>
+        <h2>Bring your own model's scores — we do the rest</h2>
+        <p>You don't need to hand over your model. Send Sentinel the scores and labels it's already producing, and it handles drift detection, threshold optimization, and compliance evidence — isolated per model, so multiple teams or customers can run on the same account without touching each other's data.</p>
       </div>
 
       <div class="api-block">
-        <pre><span class="cm"># Observability check — POST /v1/sentinel/observe&#10;</span><span class="kw">import</span> requests&#10;&#10;response = requests.<span class="kw">post</span>(&#10;    <span class="str">"https://api.strataforge3.com/v1/sentinel/observe"</span>,&#10;    headers={<span class="str">"Authorization"</span>: <span class="str">"Bearer &lt;your_api_key&gt;"</span>},&#10;    json={&#10;        <span class="str">"model_id"</span>: <span class="str">"fraud_xgb_prod_v2"</span>,&#10;        <span class="str">"period"</span>: <span class="str">"2025-Q2"</span>,&#10;        <span class="str">"features"</span>: [<span class="str">"amount"</span>, <span class="str">"velocity_24h"</span>, <span class="str">"merchant_risk"</span>],&#10;        <span class="str">"alert_threshold_psi"</span>: <span class="num">0.25</span>,&#10;        <span class="str">"explain"</span>: <span class="num">true</span>&#10;    }&#10;)&#10;&#10;<span class="cm"># Returns: recall trend · alert status · signal drift per feature · feature attribution&#10;</span>data = response.json()&#10;<span class="kw">print</span>(data[<span class="str">"recall_current"</span>], data[<span class="str">"alert_status"</span>], data[<span class="str">"top_signal_change"</span>])</pre>
+        <pre><span class="cm"># Register a model's baseline, then check for drift — POST /tenants/{model_id}/reference&#10;</span><span class="kw">import</span> requests&#10;&#10;requests.<span class="kw">post</span>(&#10;    <span class="str">f"https://api.strataforge3.com/tenants/{model_id}/reference"</span>,&#10;    headers={<span class="str">"Authorization"</span>: <span class="str">"Bearer &lt;your_api_key&gt;"</span>},&#10;    json={<span class="str">"data"</span>: baseline_rows, <span class="str">"labels"</span>: baseline_labels}&#10;)&#10;&#10;<span class="cm"># Later, check today's batch against that baseline&#10;</span>response = requests.<span class="kw">post</span>(&#10;    <span class="str">f"https://api.strataforge3.com/tenants/{model_id}/drift/report"</span>,&#10;    headers={<span class="str">"Authorization"</span>: <span class="str">"Bearer &lt;your_api_key&gt;"</span>},&#10;    json={<span class="str">"transactions"</span>: todays_rows}&#10;)&#10;&#10;<span class="cm"># Returns: alert level · drift score · which features moved, and by how much&#10;</span>data = response.json()&#10;<span class="kw">print</span>(data[<span class="str">"alert_level"</span>], data[<span class="str">"mean_psi"</span>], data[<span class="str">"critical_features"</span>])</pre>
       </div>
       <div class="api-caps">
-        <div class="api-cap"><div class="api-cap-label">Endpoints</div><p>/observe · /recall · /explain · /threshold · /report · /alerts</p></div>
-        <div class="api-cap"><div class="api-cap-label">Formats</div><p>JSON · PDF export · Webhook alerts · CSV</p></div>
+        <div class="api-cap"><div class="api-cap-label">Endpoints</div><p>/tenants/{model_id}/reference · /drift/report · /threshold/optimize · /compliance/report/{framework}</p></div>
+        <div class="api-cap"><div class="api-cap-label">Formats</div><p>JSON · Webhook alerts</p></div>
         <div class="api-cap"><div class="api-cap-label">Auth</div><p>Bearer token · Key rotation · IP allowlisting</p></div>
         <div class="api-cap"><div class="api-cap-label">Status</div><p>Live · Provisioned per engagement</p></div>
       </div>
